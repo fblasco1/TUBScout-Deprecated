@@ -1,0 +1,1 @@
+web: gunicorn statsadvance.wsgi --log-file -
