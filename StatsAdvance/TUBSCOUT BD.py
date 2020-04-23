@@ -1,5 +1,5 @@
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "StatsAdvance.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "StatsAdvance.settings.local")
 import django
 from selenium import webdriver 
 import pandas as pd
