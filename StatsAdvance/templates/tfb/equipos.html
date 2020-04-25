@@ -142,6 +142,140 @@
         <!-- card -->   </div>
         <!-- col --></div>
 <!-- row -->  </div>
+            
+            <!-- DIVISION CENTRO-->
+            
+                            <div class="row">
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <div>
+                                                    <h4 class="card-title"><span class="lstick"></span>Division Centro</h4></div>
+                                                </div>
+                                            <div class="table-responsive m-t-20">
+                                                <table class="table vm no-th-brd no-wrap pro-of-month">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th colspan="2">Equipo</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for equipo in Equipos %}
+                                                            {% if equipo.zona == 'Centro' %}
+                                                        <tr>
+                                                            <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
+                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                        </tr>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                    <!-- tabla resp. -->    </div>
+                    <!-- card body -->  </div>
+                    <!-- card -->   </div>
+                    <!-- col --> </div>
+                                <!-- DIVISION ENTRE RIOS -->
+                                <div class="col-lg-6 col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                <div>
+                                                    <h4 class="card-title"><span class="lstick"></span>Division Entre Rios</h4>
+                                                </div>
+                                            </div>
+                                            <div class="table-responsive m-t-20">
+                                                <table class="table vm no-th-brd no-wrap pro-of-month">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th colspan="2">Equipo</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for equipo in Equipos %}
+                                                            {% if equipo.zona == 'Entre Rios' %}
+                                                        <tr>
+                                                            <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
+                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                        </tr>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                    <!-- tabla resp. -->    </div>
+                    <!-- card body -->  </div>
+                    <!-- card -->   </div>
+                    <!-- col --></div>
+            <!-- row -->  </div>
+                        
+                        <!-- DIVISION NOA-->
+                        
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-12">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <div class="d-flex">
+                                                            <div>
+                                                                <h4 class="card-title"><span class="lstick"></span>Division NOA</h4></div>
+                                                            </div>
+                                                        <div class="table-responsive m-t-20">
+                                                            <table class="table vm no-th-brd no-wrap pro-of-month">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th colspan="2">Equipo</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for equipo in Equipos %}
+                                                                        {% if equipo.zona == 'NOA' %}
+                                                                    <tr>
+                                                                        <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
+                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                                    </tr>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                <!-- tabla resp. -->    </div>
+                                <!-- card body -->  </div>
+                                <!-- card -->   </div>
+                                <!-- col --> </div>
+                                            <!-- DIVISION NEA -->
+                                            <div class="col-lg-6 col-md-12">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                        <div class="d-flex">
+                                                            <div>
+                                                                <h4 class="card-title"><span class="lstick"></span>Division NEA</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="table-responsive m-t-20">
+                                                            <table class="table vm no-th-brd no-wrap pro-of-month">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th></th>
+                                                                        <th colspan="2">Equipo</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for equipo in Equipos %}
+                                                                        {% if equipo.zona == 'NEA' %}
+                                                                    <tr>
+                                                                        <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
+                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                                    </tr>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                <!-- tabla resp. -->    </div>
+                                <!-- card body -->  </div>
+                                <!-- card -->   </div>
+                                <!-- col --></div>
+                        <!-- row -->  </div>
                 <!-- ============================================================== -->
                 <!-- End Page Content -->
                 <!-- ============================================================== -->

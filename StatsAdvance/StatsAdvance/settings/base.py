@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apps.tfb',
     'apps.usuario',
-    'scraper.scraper.apps.ScraperConfig',
+    'scraper.apps.ScraperConfig',
     'import_export',
 ]
 
