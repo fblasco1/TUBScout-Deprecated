@@ -19,6 +19,9 @@ from django.contrib.auth.views import LogoutView
 from apps.usuario.views import LoginView, RegisterView
 from .views import LandingPage
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',LandingPage.as_view(),name='landingpage'), #LandingPage
@@ -28,4 +31,4 @@ urlpatterns = [
     path('login', LoginView.as_view(),name='login'), 
     path('logout',LogoutView.as_view(),name='logout'),
     path('registro',RegisterView.as_view(),name='registro'),
-]
+] + static(settings.STATIC_URL, document_route = settings.STATIC_ROOT)
