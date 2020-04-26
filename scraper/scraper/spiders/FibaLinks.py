@@ -12,7 +12,6 @@ class FibaSpider(CrawlSpider):
         """
             Links fixture
         """
-
         'https://www.argentina.basketball/tfb/fixture/de/division-centro',
         'https://www.argentina.basketball/tfb/fixture/de/entre-rios',
         'https://www.argentina.basketball/tfb/fixture/de/nea',
