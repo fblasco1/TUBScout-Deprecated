@@ -1,0 +1,231 @@
+{% extends 'tfb/equipos.html' %}
+{% block titulo %} {{equipo.nombre}} {% endblock titulo %}
+
+        
+{% block body %}
+<div class="container-fluid">
+    <div class="row page-titles">
+        <div class="col-sm-1 align-self-center">
+            <img src="{{equipo.urlLogo}}" alt="Logo">
+        </div>
+        <div class="col-md-4 align-self-center">
+           <h3>{{equipo.nombre}}</h3>
+        </div>
+        <div class="col md-4 col-sm-3 align-self-center">
+            <table class="table table-bordered"> 
+                <thead>
+                    <tr>
+                        <th scope="col">GANADOS</th>
+                        <th scope="col">PERDIDOS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="center">{{estadisticas.ganados}}</td>
+                        <td align="center">{{estadisticas.perdidos}}</td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
+        <div class="col-sm-3 align-self-center">
+            <a href="{% url 'tfb:detalle_partido1' equipo.id_equipo %}" class="btn btn-info pull-right">Ver Partidos</a>
+        </div>
+    </div>
+        
+
+<div class="row">
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick"></span>Plantel</h4></div>
+                </div>
+                {% if plantel %}
+                <div class="table-responsive m-t-20">
+                    <table class="table vm no-th-brd no-wrap pro-of-month">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th colspan="2">Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for jugador in plantel %}
+                                <tr>
+                                    <td style="width:50px;"><span class="round"><img src="{{jugador.urlIMG}}" alt="" width="50"></span></td>
+                                    <td><a href="{% url 'tfb:detalle_jugador' jugador.id %}">{{jugador.nombre}}</a></td>
+                                </tr>
+                            {% endfor %}  
+                        </tbody>
+                    </table>
+                </div> <!-- tabla resp. -->
+                    {% else %}
+                        <h1>No hay jugadores registrados en {{equipo.nombre}}</h1>
+                    {% endif %}
+            </div><!-- card body -->      
+        </div><!-- card -->       
+    </div><!-- col -->    
+
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick"></span>Jugadores Destacados</h4></div>    
+                    </div>
+                    <div class="list">
+                        <ul>
+                            <h5 class="card-title"><span class="lstick"></span>Puntos</h5></div>
+                        </ul>
+                        <ul>
+                            <h5 class="card-title"><span class="lstick"></span>Rebotes</h5></div>
+                        </ul>
+                    </div>
+            </div><!-- card body -->      
+        </div><!-- card -->       
+    </div><!-- col -->
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4 class="card-title"><span class="lstick"></span>Estadisticas Globales</h4></div>
+                    </div>
+                    <div class="table-responsive m-t-20">
+                        <table class="table table-data-table">
+                            <thead>
+                                <tr>
+                                    <th>PTS</th>
+                                    <th>TCc</th>
+                                    <th>TCi</th>
+                                    <th>%TC</th>
+                                    <th>2Pc</th>
+                                    <th>2Pi</th>
+                                    <th>%2P</th>
+                                    <th>3Pc</th>
+                                    <th>3Pi</th>
+                                    <th>%3P</th>
+                                    <th>TLc</th>
+                                    <th>TLi</th>
+                                    <th>%TL</th>
+                                    <th>RO</th>
+                                    <th>RD</th>
+                                    <th>RT</th>
+                                    <th>ASIS</th>
+                                    <th>PER</th>
+                                    <th>REC</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{estadisticas.puntos|floatformat:1}}</td>
+                                    <td>{{estadisticas.tiros_campo_convertidos|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_campo_intentados|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_campo_porcentaje|floatformat:1}}</td>
+                                    <td>{{estadisticas.tiros_2_convertidos|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_2_intentados|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_2_porcentaje|floatformat:1}}</td>
+                                    <td>{{estadisticas.tiros_3_convertidos|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_3_intentados|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_3_porcentaje|floatformat:1}}</td>
+                                    <td>{{estadisticas.tiro_libre_convertido|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiro_libre_intentado|floatformat:0}}</td>
+                                    <td>{{estadisticas.tiros_libre_porcentaje|floatformat:1}}</td>
+                                    <td>{{estadisticas.rebote_ofensivo|floatformat:1}}</td>
+                                    <td>{{estadisticas.rebote_defensivo|floatformat:1}}</td>
+                                    <td>{{estadisticas.rebote_total|floatformat:1}}</td>
+                                    <td>{{estadisticas.asistencias|floatformat:1}}</td>
+                                    <td>{{estadisticas.perdidas|floatformat:1}}</td>
+                                    <td>{{estadisticas.recuperos|floatformat:1}}</td>
+                                </tr>                            
+                            </tbody>
+                        </table>
+<!-- tabla resp. --> </div>
+<!-- card body --></div>
+<!-- card -->  </div>
+<!-- col --></div>
+</div>
+
+<div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div>
+                            <h4 class="card-title"><span class="lstick"></span>Estadisticas Avanzadas</h4></div>
+                    </div>
+                    <div class="table-responsive m-t-20">
+                        <table class="table table-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Pace</th>
+                                    <th>%EFG</th>
+                                    <th>%TS</th>
+                                    <th>Eff OF</th>
+                                    <th>Eff DEF</th>
+                                    <th>%TRO</th>
+                                    <th>%TRD</th>
+                                    <th>%TAS</th>
+                                    <th>%TREC</th>
+                                    <th>%TPER</th>
+                                    <th>OP TL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{estadisticas.pace|floatformat:2}}</td>
+                                    <td>{{estadisticas.eficiencia_tiro_campo|floatformat:2}}</td>
+                                    <td>{{estadisticas.true_shooting|floatformat:2}}</td>
+                                    <td>{{estadisticas.eficiencia_ofensiva|floatformat:2}}</td>
+                                    <td>{{estadisticas.eficiencia_defensiva|floatformat:2}}</td>
+                                    <td>{{estadisticas.tasa_rebote_ofensivo|floatformat:2}}</td>
+                                    <td>{{estadisticas.tasa_rebote_defensivo|floatformat:2}}</td>
+                                    <td>{{estadisticas.tasa_asistencias|floatformat:2}}</td>
+                                    <td>{{estadisticas.tasa_recuperos|floatformat:2}}</td>
+                                    <td>{{estadisticas.tasa_perdidas|floatformat:2}}</td>
+                                    <td>{{estadisticas.oportunidad_tiro_libre|floatformat:2}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+<!-- tabla resp. -->        </div>
+<!-- card body -->      </div>
+<!-- card -->       </div>
+<!-- col -->    </div>
+
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div>
+                                    <h4 class="card-title"><span class="lstick"></span>Estadisticas de Equipo</h4>
+                                </div>
+                            </div>
+                            <div class="table-responsive m-t-20">
+                                <table class="table table-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Puntos de Contraataque</th>
+                                            <th>Puntos de Perdidas</th>
+                                            <th>Puntos en Pintura</th>
+                                            <th>Puntos Suplentes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{estadisticas.puntos_contraataque}}</td>
+                                            <td>{{estadisticas.puntos_de_perdidas}}</td>
+                                            <td>{{estadisticas.puntos_pintura}}</td>
+                                            <td>{{estadisticas.puntos_banca}}</td>
+                                        </tr>                    
+                                    </tbody>
+                                </table>
+<!-- tabla resp. -->        </div>
+<!-- card body -->      </div>
+<!-- card -->       </div>
+<!-- col -->    </div>
+<!-- row --></div>
+</div>
+{% endblock body %}
