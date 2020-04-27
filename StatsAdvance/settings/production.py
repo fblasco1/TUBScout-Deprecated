@@ -3,7 +3,7 @@ import django_heroku
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['tubscout.herokuapp.com']
 
