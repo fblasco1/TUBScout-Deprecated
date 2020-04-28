@@ -10,9 +10,9 @@ ALLOWED_HOSTS = ['tubscout.herokuapp.com']
 DATABASES = {
 'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd8n8462eetj13u',
-        'USER': 'lxhyphrjgeyvvn',
-        'PASSWORD': 'adcac99021773ffb2c82362569f9ead7edff7b1e6e681a60e3db20faf60cb895',
+        'NAME': 'd9pjc95l9k9mjt',
+        'USER': 'yapsamtcvfjeco',
+        'PASSWORD': '27e0ee76c25d6ccb0185a4008ce27cbfbfb44745eaa1825859c05bf6d72093fa',
         'HOST': 'ec2-34-234-228-127.compute-1.amazonaws.com',
         'PORT': '5432',
         }
