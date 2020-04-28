@@ -13,19 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from allauth.account.views import confirm_email
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LogoutView
-from apps.usuario.views import LoginView, RegisterView
 from .views import LandingPage
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',LandingPage.as_view(),name='landingpage'), #LandingPage
+    url(r'^accounts/', include('allauth.urls')), #AllAuth
+    url(r'^accounts-rest/registration/account-confirm-email/(?P<key>.+)/$', confirm_email, name='account_confirm_email'), #Confirmation Email
     path('tfb/', include(('apps.tfb.urls','tfb'))), #urls.py tfb
-    path('usuario/', include(('apps.usuario.urls','usuario'))), #urls.py usuario
-    path('usuarios/', include(('apps.usuario.passwords.urls','passwords'))), #urls.py contraseñas
-    path('login', LoginView.as_view(),name='login'), 
-    path('logout',LogoutView.as_view(),name='logout'),
-    path('registro',RegisterView.as_view(),name='registro'),
 ]

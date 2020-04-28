@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!--<link href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">-->
     <!-- This page CSS -->
-
+    {% block extra-css %} {% endblock extra-css %}
     <!-- Custom CSS -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <!-- Dashboard 1 Page CSS -->
@@ -98,7 +98,7 @@
                         <li> <a class="waves-effect waves-dark" href="/tfb/listar_equipo" aria-expanded="false"><i class="mdi mdi-account-multiple" ></i><span class="hide-menu">Equipos</span></a></li>
                         <!-- <li> <a class="waves-effect waves-dark" href="" aria-expanded="false"><i class="mdi mdi-upload"></i><span class="hide-menu">Agregar Partido</span></a></li>-->
                         <li> <a class="waves-effect waves-dark" href="/tfb/calculator" aria-expanded="false"><i class="mdi mdi-calculator"></i><span class="hide-menu">Calculadora Estadistica Avanzada</span></a></li>
-                        <li> <a class="waves-effect waves-dark" href="" aria-expanded="false"><i class="mdi mdi-logout"></i><span class="hide-menu">Logout</span></a></li>
+                        <li> <a class="waves-effect waves-dark" href="/accounts/logout" aria-expanded="false"><i class="mdi mdi-logout"></i><span class="hide-menu">Logout</span></a></li>
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
@@ -131,7 +131,7 @@
             <!-- End footer -->
             <!-- ============================================================== -->
         </div>
-        {% endblock body %}
+               {% endblock body %}
         <!-- ============================================================== -->
         <!-- End Page wrapper  -->
         <!-- ============================================================== -->
@@ -160,14 +160,10 @@
     <!-- ============================================================== -->
     <!-- This page plugins -->
     <!-- ============================================================== -->
-    <script src="{% static 'assets/plugins/chartist-js/dist/chartist.min.js' %}"></script>
-    <script src="{% static 'assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js' %}"></script>
-    <!--c3 JavaScript -->
-    <script src="{% static 'assets/plugins/d3/d3.min.js' %}"></script>
-    <script src="{% static 'assets/plugins/c3-master/c3.min.js' %}"></script>
     <!-- Chart JS -->
     <script src="{% static 'js/dashboard.js' %}"></script>
     {% block extra-js %}
+    
     {% endblock extra-js %}
     
 </body>

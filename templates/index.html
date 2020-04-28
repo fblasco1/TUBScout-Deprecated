@@ -32,16 +32,6 @@
 </head>
   
 <body>
-  {% if messages %}
-    <div class="alert alert-success messages">
-      {% for message in messages %}
-      <span {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-          {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
-          {{ message }}<br/>
-      </span>
-      {% endfor %}
-    </div>
-  {% endif %}
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top d-flex align-items-center">
     <div class="container d-flex align-items-center">
@@ -60,7 +50,7 @@
           <li><a href="#pricing">Planes</a></li>
           <li><a href="#contact">Contacto</a></li>
 
-          <li class="get-started"><a href="/login">Iniciar Sesión</a></li>
+          <li class="get-started"><a href="/accounts/login">Iniciar Sesión</a></li>
         </ul>
       </nav><!-- .nav-menu -->
     </div>
@@ -76,8 +66,9 @@
           <h1 data-aos="fade-up">Lleva tu análisis a un escalón superior</h1>
           <h2 data-aos="fade-up" data-aos-delay="400">Plataforma de scouting para baloncesto</h2>
           <div data-aos="fade-up" data-aos-delay="800">
-            <a href="#pricing" class="btn btn-lg btn-primary" >Comprar</a>
-          <button type="button" class="btn btn-lg btn-outline-primary" data-toggle="modal" data-target="#registroModal" data-whatever="Full">Probar</button>
+          <a href="#pricing" class="btn btn-lg btn-primary" >Comprar</a>
+          <a href="{%url 'account_signup' %}" class="btn btn-lg btn-outline-primary">Probar</a>
+          
           </div>
         </div>
         <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="fade-left" data-aos-delay="200">
@@ -801,20 +792,7 @@
   <!-- Template Main JS File -->
   <script src="{% static 'landing page/assets/js/main.js' %}"></script>
   <!-- Modal JS-->
-  <script type="text/javascript">
-   $('#registroModal').load('registro',function(){
-      $('#registroModal').on('shown.bs.modal', function (event){
-          var button = $(event.relatedTarget) // Button that triggered the modal
-          var licencia = button.data('whatever') // Extract info from data-* attributes
-          // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-          // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-          var modal = $(this)
-          modal.find('#licencia').val(licencia)
-    })
-   })
-      
-  </script>
-
+  
 </body>
 
 </html>

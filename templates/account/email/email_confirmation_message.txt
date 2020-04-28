@@ -1,0 +1,9 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}El equipo de {{ site_name }} le da bienvenida!
+
+{{ user_display }} ha recibido este mail porque ha conectado esta dirección de correo a su cuenta.
+
+Confirme su cuenta haciendo click en la siguiente url, {{ activate_url }}
+{% endblocktrans %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Gracias, {{ site_name }} TEAM!
+{{ site_domain }}{% endblocktrans %}
+{% endautoescape %}

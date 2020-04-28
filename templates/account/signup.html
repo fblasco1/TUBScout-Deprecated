@@ -1,0 +1,73 @@
+{% extends "account/base.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block head_title %}{% trans 'Registrarse' %}{% endblock %}
+{% block extra_head %} 
+<!-- Font Icon -->
+<link rel="stylesheet" href="{% static 'fonts/material-icon/css/material-design-iconic-font.min.css' %}">
+<!-- Main css -->
+<link rel="stylesheet" href="{% static 'account/Signup/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main">
+  <div class="container">
+      <div class="signup-content">
+          <div class="signup-img">
+              <img src="{% static 'account/images/signup-img.jpg' %}" alt="">
+          </div>
+          <div class="signup-form">
+              <form method="POST" class="register-form" id="register-form" action="{% url 'account_signup' %}">
+                  <h2>Registrarse</h2>
+                  {% csrf_token %}
+                  <div class="form-row">
+                  <div class="form-group">
+                    <label for="first_name">Nombres :</label>
+                    {{form.first_name}}
+                  </div>
+                  <div class="form-group">
+                    <label for="last_name">Apellido :</label>
+                    {{form.last_name}}
+                  </div>
+                </div>
+                  <div class="form-group">
+                    <label for="email">Correo Electrónico :</label>
+                    {{form.email}}
+                  </div>
+                  <div class="form-group">
+                      <label for="password1">Contraseña :</label>
+                      {{form.password1}}
+                  </div>
+                  <div class="form-group">
+                    <label for="password2">Repetir Contraseña :</label>
+                    {{form.password2}}
+                  </div>
+                  <div class="form-group">
+                      <label for="user_type">Tipo de Usuario :</label>
+                      {{form.user_type}}
+                  </div>
+                  <div class="form-group">
+                    <label for="coach_team">Equipo :</label>
+                    {{form.coach_team}}
+                  </div>
+                  <div class="form-group">
+                    <label for="coach_team">Tipo de Licencia :</label>
+                    {{form.license_type}}
+                  </div>
+                  <div class="form-submit">
+                      <input type="reset" value="{% trans 'Cancelar' %}" class="cancel" name="reset" id="reset" />
+                      <input type="submit" value="{% trans 'Registrarse' %}" class="submit" name="submit" id="submit" />
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+  <script src="{% static 'account/vendor/jquery/jquery.min.js' %} "></script>
+  <script src="{% static 'account/js/main.js' %} "></script>
+{% endblock%}
+  
