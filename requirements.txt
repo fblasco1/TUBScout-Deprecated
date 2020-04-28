@@ -9,6 +9,7 @@ cffi==1.14.0
 chardet==3.0.4
 chromedriver==2.24.1
 chromedriver-binary==80.0.3987.16.0
+click==7.1.1
 colorama==0.4.1
 constantly==15.1.0
 cryptography==2.9
@@ -18,8 +19,11 @@ diff-match-patch==20181111
 distlib==0.3.0
 dj-static==0.0.6
 Django==2.2.10
+django-allauth==0.41.0
 django-heroku==0.3.1
 django-import-export==2.0.2
+docker-py==1.10.6
+docker-pycreds==0.4.0
 et-xmlfile==1.0.1
 filelock==3.0.12
 get==2019.4.13
@@ -36,6 +40,7 @@ lxml==4.4.1
 MarkupPy==1.14
 mccabe==0.6.1
 numpy==1.17.2
+oauthlib==3.1.0
 odfpy==1.4.1
 openpyxl==3.0.0
 pandas==0.25.1
@@ -56,6 +61,7 @@ pylint==2.4.2
 pyOpenSSL==19.1.0
 python-dateutil==2.8.0
 python-decouple==3.3
+python3-openid==3.1.0
 pytz==2019.3
 PyYAML==5.3.1
 query-string==2019.4.13
@@ -63,6 +69,9 @@ queuelib==1.5.0
 reportlab==3.5.42
 request==2019.4.13
 requests==2.23.0
+requests-oauthlib==1.3.0
+retrying==1.3.3
+scrapinghub==2.3.1
 Scrapy==2.0.1
 scrapy-proxy-pool==0.1.9
 scrapy-user-agents==0.1.1
@@ -74,6 +83,8 @@ soupsieve==1.9.5
 sqlparse==0.3.0
 static3==0.7.0
 tablib==1.1.0
+toml==0.10.0
+tqdm==4.45.0
 Twisted==20.3.0
 typed-ast==1.4.0
 ua-parser==0.10.0
@@ -83,6 +94,7 @@ virtualenv==20.0.18
 virtualenv-clone==0.5.4
 w3lib==1.21.0
 webencodings==0.5.1
+websocket-client==0.57.0
 whitenoise==5.0.1
 wrapt==1.11.2
 xlrd==1.2.0
