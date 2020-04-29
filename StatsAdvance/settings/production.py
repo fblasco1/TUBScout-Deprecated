@@ -1,4 +1,5 @@
 from .base import *
+import dj_database_url
 import django_heroku
 
 # Database
@@ -8,15 +9,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['tubscout.herokuapp.com']
 
 DATABASES = {
-'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd9pjc95l9k9mjt',
-        'USER': 'yapsamtcvfjeco',
-        'PASSWORD': '27e0ee76c25d6ccb0185a4008ce27cbfbfb44745eaa1825859c05bf6d72093fa',
-        'HOST': 'ec2-34-234-228-127.compute-1.amazonaws.com',
-        'PORT': '5432',
-        }
+'default': { }
 }
+
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 STATICFILES_DIRS = (BASE_DIR,'static')
 
