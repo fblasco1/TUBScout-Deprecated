@@ -8,8 +8,14 @@ class JugadoresResources(resources.ModelResource):
     class Meta:
         model = Jugadores
 
-class EquiposAdmin(admin.ModelAdmin):
+class EquiposResources(resources.ModelResource):
+    class Meta:
+        model = Equipos
+
+class EquiposAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     search_fields = ['nombre']
+    list_display =  ('id_equipo','nombre','zona', 'urlLogo',)
+    resource_class = EquiposResources
     
 class JugadoresAdmin(ImportExportModelAdmin, admin.ModelAdmin,):
     search_fields = ['id_equipo']
