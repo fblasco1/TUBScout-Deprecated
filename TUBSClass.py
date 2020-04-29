@@ -1,4 +1,5 @@
 class StatsAdvance():
+    
     def pace(self,tiroscampointentados,perdidas,tiroslibresintentados,reboff):
         pace = 0.96 * (tiroscampointentados + perdidas) + 0.44 * (tiroslibresintentados - reboff)
         return round(pace,2)
