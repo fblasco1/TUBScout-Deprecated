@@ -17,7 +17,7 @@ LICENSE_TYPE = [
 
 EQUIPOS = []
 for equipo in Equipos.objects.all():
-    objeto = (equipo.id_equipo,equipo.nombre)
+    objeto = (equipo.id_equipo,equipo.nombre_corto)
     EQUIPOS.append(objeto)
 class CustomSignupForm(SignupForm):
     
