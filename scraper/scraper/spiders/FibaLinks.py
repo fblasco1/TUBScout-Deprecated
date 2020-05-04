@@ -1,16 +1,18 @@
 import scrapy
+import json
 from scrapy.http.request import Request
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.loader import ItemLoader
-from scraper.items import PartidoItem, StatsTeamItem, StatsPlayerItem, JugadorItem
+from apps.tfb.models import Partidos
+from scraper.items import PartidoItem, EquipoItem, JugadorItem,StatsTeamItem, StatsPlayerItem 
 
-class FibaSpider(CrawlSpider):
-    name = 'fibalinks'
+class PartidosSpider(CrawlSpider):
+    name = 'partidos'
     allowed_domains = ['www.argentina.basketball', 'www.fibalivestats.com']
     start_urls = (
         """
-            Links fixture
+             Links fixture
         """
         'https://www.argentina.basketball/tfb/fixture/de/division-centro',
         'https://www.argentina.basketball/tfb/fixture/de/entre-rios',
@@ -21,206 +23,256 @@ class FibaSpider(CrawlSpider):
         'https://www.argentina.basketball/tfb/fixture/de/metropolitana',
         'https://www.argentina.basketball/tfb/fixture/de/patagonia',
     )
-
+    
     rules  = (
         Rule(LinkExtractor(restrict_xpaths=('//*[contains(@href,"https://www.argentina.basketball/tfb/partido/")]')), 
         callback= 'parse_detalle'), #RULE 1 GAME PAGE
-
-        Rule(LinkExtractor(restrict_xpaths='//*[contains(@src,"www.fibalivestats.com/")]'), 
-        callback='parse_fiba'), #RULE 2 IFRAME BOXSCORE
-
-        Rule(LinkExtractor(restrict_xpaths='/html/body/div[2]/div[1]/div[1]/a'),
-        callback='parse_fibabs'), #RULE 3 COMPLETE BOXSCORE
     )
-
-    def parse_detalle(self,response): 
+    
+    def parse_detalle(self,response):       
         """
-            Here extract Game Info (detalle_partido = Game Day, fibalink = BoxScore Game link) and aplicate rule 2
+            Here extract Game Info & Request DATA.JSON
         """
         partido = ItemLoader(item=PartidoItem(), response= response)
-        
+
+        matchId = response.xpath('//*[contains(@src,"www.fibalivestats.com/")]/@src').extract().pop().split('/')[5]
+
+        partido.add_value('id_partido', matchId)
         partido.add_xpath('detalle_partido', '//*[@id="page_wrapper"]/section/div/div/div/div[1]/h4/text()[1]')
-        partido.add_xpath('fibalink', '//*[contains(@src,"www.fibalivestats.com/")]')
+           
+        yield partido.load_item()
+
+class TeamsSpider(scrapy.Spider):
+    name = 'teams'
+    
+    def start_requests(self):
+        for partido in Partidos.objects.all():
+            url = ('http://www.fibalivestats.com/data/'+ str(partido.id_partido) + '/data.json') 
+            yield Request(url=url,callback= self.parse_fiba)
+
+    def parse_fiba(self,response):
+        equipo = ItemLoader(item=EquipoItem(), response=response)
         
-        yield partido
+        jsonresponse = json.loads(response.text)
+
+        equipo.add_value('nombre_largo', jsonresponse['tm']['1']['name'])
+        equipo.add_value('nombre_corto', jsonresponse['tm']['1']['shortName'])
+        equipo.add_value('urlLogo', jsonresponse['tm']['1']['logoT']['url'])
+        yield equipo.load_item()
+
+class JugadoresSpider(scrapy.Spider):
+    name = 'jugadores'
+    
+    def start_requests(self):
+        for partido in Partidos.objects.all():
+            url = ('http://www.fibalivestats.com/data/'+ str(partido.id_partido) + '/data.json') 
+            yield Request(url=url,callback= self.parse_fiba)
+
+    def parse_fiba(self,response):
+        plantel  = ItemLoader(item=JugadorItem(), response= response)
+
+        jsonresponse = json.loads(response.text)
+        
+        equipoA = jsonresponse['tm']['1']['shortName']
+        equipoB = jsonresponse['tm']['2']['shortName']
+
+        #PLANTEL
+        #JUGADORES A
+        pno = jsonresponse['tm']['1']['pl'].keys()
+        
+        for player in pno:
+            try: 
+                foto= jsonresponse['tm']['1']['pl'][player]['photoT'].replace('\/','/')
+            except KeyError:
+                foto= ""
+            
+            plantel.add_value('id_jugador', player)
+            plantel.add_value('nombre', jsonresponse['tm']['1']['pl'][player]['firstName'])
+            plantel.add_value('apellido', jsonresponse['tm']['1']['pl'][player]['familyName'])
+            plantel.add_value('equipo', equipoA)
+            plantel.add_value('urlIMG',  foto)
+            yield plantel.load_item()
+        
+        pno = jsonresponse['tm']['2']['pl'].keys()
+    
+        for player in pno:
+            try: 
+                foto = jsonresponse['tm']['2']['pl'][player]['photoT'].replace('\/','/')
+            except KeyError:
+                foto = ""
+
+            plantel.add_value('id_jugador', player)
+            plantel.add_value('nombre', jsonresponse['tm']['2']['pl'][player]['firstName'])
+            plantel.add_value('apellido', jsonresponse['tm']['2']['pl'][player]['familyName'])
+            plantel.add_value('equipo', equipoB)
+            plantel.add_value('urlIMG', foto)
+            yield plantel.load_item()
+        
+class StatsSpider(scrapy.Spider):
+    name = 'stats'
+    
+    def start_requests(self):
+        for partido in Partidos.objects.all():
+            url = ('http://www.fibalivestats.com/data/'+ str(partido.id_partido) + '/data.json') 
+            yield Request(url=url,callback= self.parse_fiba)
 
     def parse_fiba(self,response):
         """
-            Here extract team players and aplicate rule 3
+            Stats del partido
         """
-
-        jugador  = ItemLoader(item=JugadorItem(), response= response)
-    
-        equipoA = response.xpath('/html/body/div[2]/div[1]/div[1]/div[1]/div/span[2]//text()').get()
-        equipoB = response.xpath('/html/body/div[2]/div[1]/div[1]/div[2]/div/span[2]//text()').get()
-    
-        #CREATE OR UPDATE PLANTEL
-        #JUGADORES A
-        jugadorpno = response.xpath('//a[contains(@tno,1)]//@pno').getall()
-    
-        for player in jugadorpno:
-            if player == 0:
-                continue
-            else: 
-                jugador.add_xpath('id_jugador', player)
-                jugador.add_xpath('nombre', '//*[@id="aj_1_'+ str(player) +'_name"]')
-                jugador.add_value('equipo', equipoA)
-                jugador.add_xpath('urlIMG', '//*[@id="aj_1_'+ str(player) +'_photoT"]/img//@src')
-                yield jugador
-
-        #JUGADORES B
-        jugadorpno = response.xpath('//a[contains(@tno,2)]//@pno').getall()
-    
-        for player in jugadorpno:
-            if player == 0:
-                continue
-            else:
-                jugador.add_xpath('id_jugador', player)
-                jugador.add_xpath('nombre', '//*[@id="aj_2_'+ str(player) +'_name"]')
-                jugador.add_value('equipo', equipoB)
-                jugador.add_xpath('urlIMG', '//*[@id="aj_2_'+ str(player) +'_photoT"]/img//@src')
-                yield jugador
-
-    def parse_fibabs(self,response):
-        partido   = ItemLoader(item=StatsTeamItem(), response= response)
+        equipo   = ItemLoader(item=StatsTeamItem(), response= response)
         jugador  = ItemLoader(item=StatsPlayerItem(), response= response)
+        
+        jsonresponse = json.loads(response.text)
 
+        matchId = response.url.split('/')[4]
 
-        id_partido = response.xpath('//*[@id="matchId"]//@value')
-    
-        #EQUIPOS
-        partido.add_value('id_partido', id_partido)
-        partido.add_xpath('equipoA', '//*[@id="aj_1_name"]/text()')
-        partido.add_value('local', 1)
-        partido.add_xpath('puntosA','//*[@id="aj_1_tot_sPoints"]/text()')
-        partido.add_xpath('tccA', '//*[@id="aj_1_tot_sFieldGoalsMade"]/text()')
-        partido.add_xpath('tciA', '//*[@id="aj_1_tot_sFieldGoalsAttempted"]/text()')
-        partido.add_xpath('tcpA', '//*[@id="aj_1_tot_sFieldGoalsPercentage"]/text()')
-        partido.add_xpath('t2cA', '//*[@id="aj_1_tot_sTwoPointersMade"]/text()')
-        partido.add_xpath('t2iA', '//*[@id="aj_1_tot_sTwoPointersAttempted"]/text()')
-        partido.add_xpath('t2pA', '//*[@id="aj_1_tot_sTwoPointersPercentage"]/text()')
-        partido.add_xpath('t3cA', '//*[@id="aj_1_tot_sThreePointersMade"]/text()')
-        partido.add_xpath('t3iA', '//*[@id="aj_1_tot_sThreePointersAttempted"]/text()')
-        partido.add_xpath('t3pA', '//*[@id="aj_1_tot_sThreePointersPercentage"]/text()')
-        partido.add_xpath('tlcA', '//*[@id="aj_1_tot_sFreeThrowsMade"]/text()')
-        partido.add_xpath('tliA', '//*[@id="aj_1_tot_sFreeThrowsAttempted"]/text()')
-        partido.add_xpath('tlpA', '//*[@id="aj_1_tot_sFreeThrowsPercentage"]/text()')
-        partido.add_xpath('roA', '//*[@id="aj_1_tot_sReboundsOffensive"]/text()')
-        partido.add_xpath('rdA', '//*[@id="aj_1_tot_sReboundsDefensive"]/text()')
-        partido.add_xpath('rtA', '//*[@id="aj_1_tot_sReboundsTotal"]/text()')
-        partido.add_xpath('asisA', '//*[@id="aj_1_tot_sAssists"]/text()')
-        partido.add_xpath('perA', '//*[@id="aj_1_tot_sTurnovers"]/text()')
-        partido.add_xpath('recA', '//*[@id="aj_1_tot_sSteals"]/text()')
-        partido.add_xpath('tapA', '//*[@id="aj_1_tot_sBlocks"]/text()')
-        partido.add_xpath('fpA', '//*[@id="aj_1_tot_sFoulsTotal"]/text()')
-        partido.add_xpath('valA', '//*[@id="aj_1_tot_eff_1"]/text()')
-        partido.add_xpath('puntos_bancaA', '//*[@id="aj_1_tot_sBenchPoints"]/text()')
-        partido.add_xpath('puntos_contraataqueA', '//*[@id="aj_1_tot_sPointsFastBreak"]/text()')
-        partido.add_xpath('puntos_de_perdidasA', '//*[@id="aj_1_tot_sPointsFromTurnovers"]/text()')
-        partido.add_xpath('puntos_pinturaA', '//*[@id="aj_1_tot_sPointsInThePaint"]/text()')
-        partido.add_xpath('puntos_roA', '//*[@id="aj_1_tot_sPointsSecondChance"]/text()')
+        equipoA = jsonresponse['tm']['1']['shortName']
+        equipoB = jsonresponse['tm']['2']['shortName']
+
+        #STATS EQUIPOS
+        equipo.add_value('id_partido', matchId)
+        equipo.add_value('equipoA', equipoA)
+        equipo.add_value('local', 1)
+        equipo.add_value('puntosA', jsonresponse['tm']['1']['score'])
+        equipo.add_value('q1A', jsonresponse['tm']['1']['p1_score'])
+        equipo.add_value('q2A', jsonresponse['tm']['1']['p2_score'])
+        equipo.add_value('q3A', jsonresponse['tm']['1']['p3_score'])
+        equipo.add_value('q4A', jsonresponse['tm']['1']['p4_score'])
+        equipo.add_value('tccA', jsonresponse['tm']['1']['tot_sFieldGoalsMade'])
+        equipo.add_value('tciA', jsonresponse['tm']['1']['tot_sFieldGoalsAttempted'])
+        equipo.add_value('tcpA', jsonresponse['tm']['1']['tot_sFieldGoalsPercentage'])
+        equipo.add_value('t2cA', jsonresponse['tm']['1']['tot_sTwoPointersMade'])
+        equipo.add_value('t2iA', jsonresponse['tm']['1']['tot_sTwoPointersAttempted'])
+        equipo.add_value('t2pA', jsonresponse['tm']['1']['tot_sTwoPointersPercentage'])
+        equipo.add_value('t3cA', jsonresponse['tm']['1']['tot_sThreePointersMade'])
+        equipo.add_value('t3iA', jsonresponse['tm']['1']['tot_sThreePointersAttempted'])
+        equipo.add_value('t3pA', jsonresponse['tm']['1']['tot_sThreePointersPercentage'])
+        equipo.add_value('tlcA', jsonresponse['tm']['1']['tot_sFreeThrowsMade'])
+        equipo.add_value('tliA', jsonresponse['tm']['1']['tot_sFreeThrowsAttempted'])
+        equipo.add_value('tlpA', jsonresponse['tm']['1']['tot_sFreeThrowsPercentage'])
+        equipo.add_value('roA', jsonresponse['tm']['1']['tot_sReboundsOffensive'])
+        equipo.add_value('rdA', jsonresponse['tm']['1']['tot_sReboundsDefensive'])
+        equipo.add_value('rtA', jsonresponse['tm']['1']['tot_sReboundsTotal'])
+        equipo.add_value('asisA', jsonresponse['tm']['1']['tot_sAssists'])
+        equipo.add_value('perA', jsonresponse['tm']['1']['tot_sTurnovers'])
+        equipo.add_value('recA', jsonresponse['tm']['1']['tot_sSteals'])
+        equipo.add_value('tapA', jsonresponse['tm']['1']['tot_sBlocks'])
+        equipo.add_value('fpA', jsonresponse['tm']['1']['tot_sFoulsTotal'])
+        equipo.add_value('valA', jsonresponse['tm']['1']['tot_eff_1'])
+        equipo.add_value('puntos_bancaA', jsonresponse['tm']['1']['tot_sBenchPoints'])
+        equipo.add_value('puntos_contraataqueA', jsonresponse['tm']['1']['tot_sPointsFastBreak'])
+        equipo.add_value('puntos_de_perdidasA', jsonresponse['tm']['1']['tot_sPointsFromTurnovers'])
+        equipo.add_value('puntos_pinturaA', jsonresponse['tm']['1']['tot_sPointsInThePaint'])
+        equipo.add_value('puntos_roA', jsonresponse['tm']['1']['tot_sPointsSecondChance'])
         #EQUIPO B
-        partido.add_xpath('equipoB', '//*[@id="aj_2_name"]/text()')
-        partido.add_value('visitante', 0)
-        partido.add_value('puntosB', '//*[@id="aj_2_tot_sPoints"]/text()')
-        partido.add_xpath('tccB', '//*[@id="aj_2_tot_sFieldGoalsMade"]/text()')
-        partido.add_xpath('tciB', '//*[@id="aj_2_tot_sFieldGoalsAttempted"]/text()')
-        partido.add_xpath('tcpB', '//*[@id="aj_2_tot_sFieldGoalsPercentage"]/text()')
-        partido.add_xpath('t2cB', '//*[@id="aj_2_tot_sTwoPointersMade"]/text()')
-        partido.add_xpath('t2iB', '//*[@id="aj_2_tot_sTwoPointersAttempted"]/text()')
-        partido.add_xpath('t2pB', '//*[@id="aj_2_tot_sTwoPointersPercentage"]/text()')
-        partido.add_xpath('t3cB', '//*[@id="aj_2_tot_sThreePointersMade"]/text()')
-        partido.add_xpath('t3iB', '//*[@id="aj_2_tot_sThreePointersAttempted"]/text()')
-        partido.add_xpath('t3pB', '//*[@id="aj_2_tot_sThreePointersPercentage"]/text()')
-        partido.add_xpath('tlcB', '//*[@id="aj_2_tot_sFreeThrowsMade"]/text()')
-        partido.add_xpath('tliB', '//*[@id="aj_2_tot_sFreeThrowsAttempted"]/text()')
-        partido.add_xpath('tlpB', '//*[@id="aj_2_tot_sFreeThrowsPercentage"]/text()')
-        partido.add_xpath('roB', '//*[@id="aj_2_tot_sReboundsOffensive"]/text()')
-        partido.add_xpath('rdB', '//*[@id="aj_2_tot_sReboundsDefensive"]/text()')
-        partido.add_xpath('rtB', '//*[@id="aj_2_tot_sReboundsTotal"]/text()')
-        partido.add_xpath('asisB', '//*[@id="aj_2_tot_sAssists"]/text()')
-        partido.add_xpath('perB', '//*[@id="aj_2_tot_sTurnovers"]/text()')
-        partido.add_xpath('recB', '//*[@id="aj_2_tot_sSteals"]/text()')
-        partido.add_xpath('tapB', '//*[@id="aj_2_tot_sBlocks"]/text()')
-        partido.add_xpath('fpB', '//*[@id="aj_2_tot_sFoulsTotal"]/text()')
-        partido.add_xpath('valB', '//*[@id="aj_2_tot_eff_1"]/text()')
-        partido.add_xpath('puntos_bancaB', '//*[@id="aj_2_tot_sBenchPoints"]/text()')
-        partido.add_xpath('puntos_contraataqueB', '//*[@id="aj_2_tot_sPointsFastBreak"]/text()')
-        partido.add_xpath('puntos_de_perdidasB', '//*[@id="aj_2_tot_sPointsFromTurnovers"]/text()')
-        partido.add_xpath('puntos_pinturaB', '//*[@id="aj_2_tot_sPointsInThePaint"]/text()')
-        partido.add_xpath('puntos_roB', '//*[@id="aj_2_tot_sPointsSecondChance"]/text()')
-        yield partido
-
-        #JUGADORES
-        jugadorpno = response.xpath('//a[contains(@tno,1)]//@pno').getall()
+        equipo.add_value('equipoB', equipoB)
+        equipo.add_value('visitante', 0)
+        equipo.add_value('puntosB', jsonresponse['tm']['2']['score'])
+        equipo.add_value('q1B', jsonresponse['tm']['2']['p1_score'])
+        equipo.add_value('q2B', jsonresponse['tm']['2']['p2_score'])
+        equipo.add_value('q3B', jsonresponse['tm']['2']['p3_score'])
+        equipo.add_value('q4B', jsonresponse['tm']['2']['p4_score'])
+        equipo.add_value('tccB', jsonresponse['tm']['2']['tot_sFieldGoalsMade'])
+        equipo.add_value('tciB', jsonresponse['tm']['2']['tot_sFieldGoalsAttempted'])
+        equipo.add_value('tcpB', jsonresponse['tm']['2']['tot_sFieldGoalsPercentage'])
+        equipo.add_value('t2cB', jsonresponse['tm']['2']['tot_sTwoPointersMade'])
+        equipo.add_value('t2iB', jsonresponse['tm']['2']['tot_sTwoPointersAttempted'])
+        equipo.add_value('t2pB', jsonresponse['tm']['2']['tot_sTwoPointersPercentage'])
+        equipo.add_value('t3cB', jsonresponse['tm']['2']['tot_sThreePointersMade'])
+        equipo.add_value('t3iB', jsonresponse['tm']['2']['tot_sThreePointersAttempted'])
+        equipo.add_value('t3pB', jsonresponse['tm']['2']['tot_sThreePointersPercentage'])
+        equipo.add_value('tlcB', jsonresponse['tm']['2']['tot_sFreeThrowsMade'])
+        equipo.add_value('tliB', jsonresponse['tm']['2']['tot_sFreeThrowsAttempted'])
+        equipo.add_value('tlpB', jsonresponse['tm']['2']['tot_sFreeThrowsPercentage'])
+        equipo.add_value('roB', jsonresponse['tm']['2']['tot_sReboundsOffensive'])
+        equipo.add_value('rdB', jsonresponse['tm']['2']['tot_sReboundsDefensive'])
+        equipo.add_value('rtB', jsonresponse['tm']['2']['tot_sReboundsTotal'])
+        equipo.add_value('asisB', jsonresponse['tm']['2']['tot_sAssists'])
+        equipo.add_value('perB', jsonresponse['tm']['2']['tot_sTurnovers'])
+        equipo.add_value('recB', jsonresponse['tm']['2']['tot_sSteals'])
+        equipo.add_value('tapB', jsonresponse['tm']['2']['tot_sBlocks'])
+        equipo.add_value('fpB', jsonresponse['tm']['2']['tot_sFoulsTotal'])
+        equipo.add_value('valB', jsonresponse['tm']['2']['tot_eff_1'])
+        equipo.add_value('puntos_bancaB', jsonresponse['tm']['2']['tot_sBenchPoints'])
+        equipo.add_value('puntos_contraataqueB', jsonresponse['tm']['2']['tot_sPointsFastBreak'])
+        equipo.add_value('puntos_de_perdidasB', jsonresponse['tm']['2']['tot_sPointsFromTurnovers'])
+        equipo.add_value('puntos_pinturaB', jsonresponse['tm']['2']['tot_sPointsInThePaint'])
+        equipo.add_value('puntos_roB', jsonresponse['tm']['2']['tot_sPointsSecondChance'])
+        yield equipo.load_item()
         
-        for player in jugadorpno:
-            if player == 0:
-                continue
-            else: 
-                jugador.add_value('id_partido', id_partido)
-                jugador.add_value('id_jugador', player)
-                jugador.add_value('equipo', '//*[@id="aj_1_name"]/text()')
-                jugador.add_xpath('minutos', '//*[@id="aj_1_'+ str(player) + '_sMinutes"]/text()')
-                jugador.add_xpath('puntos', '//*[@id="aj_1_'+ str(player) + '_sPoints"]/text()')
-                jugador.add_xpath('tiros_campo_convertidos', '//*[@id="aj_1_'+ str(player) +'_sFieldGoalsMade"]/text()')
-                jugador.add_xpath('tiros_campo_intentados', '//*[@id="aj_1_' + str(player) + '_sFieldGoalsAttempted"]/text()')
-                jugador.add_xpath('tiros_campo_porcentaje', '//*[@id="aj_1_'+ str(player) +'_sFieldGoalsPercentage"]/text()')
-                jugador.add_xpath('tiros_2_convertidos', '//*[@id="aj_1_'+ str(player) +'_sTwoPointersMade"]/text()')
-                jugador.add_xpath('tiros_2_intentados', '//*[@id="aj_1_' + str(player) + '_sTwoPointersAttempted"]/text()')
-                jugador.add_xpath('tiros_2_porcentaje', '//*[@id="aj_1_' + str(player) + '_sTwoPointersPercentage"]/text()')
-                jugador.add_xpath('tiros_3_convertidos', '//*[@id="aj_1_' + str(player) + '_sThreePointersMade"]/text()')
-                jugador.add_xpath('tiros_3_intentados', '//*[@id="aj_1_' + str(player) + '_sThreePointersAttempted"]/text()')
-                jugador.add_xpath('tiros_3_porcentaje', '//*[@id="aj_1_' + str(player) + '_sThreePointersPercentage"]/text()')
-                jugador.add_xpath('tiro_libre_convertido', '//*[@id="aj_1_' + str(player) + '_sFreeThrowsMade"]/text()')
-                jugador.add_xpath('tiro_libre_intentado', '//*[@id="aj_1_' + str(player) + '_sFreeThrowsAttempted"]/text()')
-                jugador.add_xpath('tiros_libre_porcentaje', '//*[@id="aj_1_' + str(player) + '_sFreeThrowsPercentage"]/text()')
-                jugador.add_xpath('rebote_ofensivo', '//*[@id="aj_1_' + str(player) + '_sReboundsOffensive"]/text()')
-                jugador.add_xpath('rebote_defensivo', '//*[@id="aj_1_' + str(player) + '_sReboundsDefensive"]/text()')
-                jugador.add_xpath('rebote_total', '//*[@id="aj_1_' + str(player) + '_sReboundsTotal"]/text()')
-                jugador.add_xpath('asistencias', '//*[@id="aj_1_' + str(player) + '_sAssists"]/text()')
-                jugador.add_xpath('perdidas', '//*[@id="aj_1_' + str(player) + '_sTurnovers"]/text()')
-                jugador.add_xpath('recuperos', '//*[@id="aj_1_' + str(player) + '_sSteals"]/text()')
-                jugador.add_xpath('tapones', '//*[@id="aj_1_' + str(player) + '_sBlocks"]/text()')
-                jugador.add_xpath('faltas_personales', '//*[@id="aj_1_'+ str(player) +'_sFoulsPersonal"]/text()')
-                jugador.add_xpath('faltas_recibidas', '//*[@id="aj_1_'+ str(player) +'_sFoulsOn"]/text()')
-                jugador.add_xpath('diferencia_puntos','//*[@id="aj_1_'+ str(player) +'_sPlusMinusPoints"]/text()')
-                jugador.add_xpath('valoración', '//*[@id="aj_1_' + str(player) + '_eff_1"]/text()')
-                yield jugador    
-
         #JUGADORES
-        jugadorpno = response.xpath('//a[contains(@tno,2)]//@pno').getall()
+        #EQUIPO A
+        #STATS
+        pno = jsonresponse['tm']['1']['pl'].keys()
         
-        for player in jugadorpno:
-            if player == 0:
-                continue
-            else: 
-                jugador.add_value('id_partido', id_partido)
-                jugador.add_value('id_jugador', player)
-                jugador.add_value('equipo', '//*[@id="aj_2_name"]/text()')
-                jugador.add_xpath('minutos', '//*[@id="aj_2_'+ str(player) + '_sMinutes"]/text()')
-                jugador.add_xpath('puntos', '//*[@id="aj_2_'+ str(player) + '_sPoints"]/text()')
-                jugador.add_xpath('tiros_campo_convertidos', '//*[@id="aj_2_'+ str(player) +'_sFieldGoalsMade"]/text()')
-                jugador.add_xpath('tiros_campo_intentados', '//*[@id="aj_2_' + str(player) + '_sFieldGoalsAttempted"]/text()')
-                jugador.add_xpath('tiros_campo_porcentaje', '//*[@id="aj_2_'+ str(player) +'_sFieldGoalsPercentage"]/text()')
-                jugador.add_xpath('tiros_2_convertidos', '//*[@id="aj_2_'+ str(player) +'_sTwoPointersMade"]/text()')
-                jugador.add_xpath('tiros_2_intentados', '//*[@id="aj_2_' + str(player) + '_sTwoPointersAttempted"]/text()')
-                jugador.add_xpath('tiros_2_porcentaje', '//*[@id="aj_2_' + str(player) + '_sTwoPointersPercentage"]/text()')
-                jugador.add_xpath('tiros_3_convertidos', '//*[@id="aj_2_' + str(player) + '_sThreePointersMade"]/text()')
-                jugador.add_xpath('tiros_3_intentados', '//*[@id="aj_2_' + str(player) + '_sThreePointersAttempted"]/text()')
-                jugador.add_xpath('tiros_3_porcentaje', '//*[@id="aj_2_' + str(player) + '_sThreePointersPercentage"]/text()')
-                jugador.add_xpath('tiro_libre_convertido', '//*[@id="aj_2_' + str(player) + '_sFreeThrowsMade"]/text()')
-                jugador.add_xpath('tiro_libre_intentado', '//*[@id="aj_2_' + str(player) + '_sFreeThrowsAttempted"]/text()')
-                jugador.add_xpath('tiros_libre_porcentaje', '//*[@id="aj_2_' + str(player) + '_sFreeThrowsPercentage"]/text()')
-                jugador.add_xpath('rebote_ofensivo', '//*[@id="aj_2_' + str(player) + '_sReboundsOffensive"]/text()')
-                jugador.add_xpath('rebote_defensivo', '//*[@id="aj_2_' + str(player) + '_sReboundsDefensive"]/text()')
-                jugador.add_xpath('rebote_total', '//*[@id="aj_2_' + str(player) + '_sReboundsTotal"]/text()')
-                jugador.add_xpath('asistencias', '//*[@id="aj_2_' + str(player) + '_sAssists"]/text()')
-                jugador.add_xpath('perdidas', '//*[@id="aj_2_' + str(player) + '_sTurnovers"]/text()')
-                jugador.add_xpath('recuperos', '//*[@id="aj_2_' + str(player) + '_sSteals"]/text()')
-                jugador.add_xpath('tapones', '//*[@id="aj_2_' + str(player) + '_sBlocks"]/text()')
-                jugador.add_xpath('faltas_personales', '//*[@id="aj_2_'+ str(player) +'_sFoulsPersonal"]/text()')
-                jugador.add_xpath('faltas_recibidas', '//*[@id="aj_2_'+ str(player) +'_sFoulsOn"]/text()')
-                jugador.add_xpath('diferencia_puntos','//*[@id="aj_2_'+ str(player) +'_sPlusMinusPoints"]/text()')
-                jugador.add_xpath('valoración', '//*[@id="aj_2_' + str(player) + '_eff_1"]/text()')
-                yield jugador
+        for player in pno:
+            jugador.add_value('id_partido', matchId)
+            jugador.add_value('id_jugador', player)
+            jugador.add_value('equipo', equipoA)
+            jugador.add_value('minutos', jsonresponse['tm']['1']['pl'][player]['sMinutes'])
+            jugador.add_value('puntos', jsonresponse['tm']['1']['pl'][player]['sPoints'])
+            jugador.add_value('tiros_campo_convertidos', jsonresponse['tm']['1']['pl'][player]['sFieldGoalsMade'])
+            jugador.add_value('tiros_campo_intentados', jsonresponse['tm']['1']['pl'][player]['sFieldGoalsAttempted'])
+            jugador.add_value('tiros_campo_porcentaje', jsonresponse['tm']['1']['pl'][player]['sFieldGoalsPercentage'])
+            jugador.add_value('tiros_2_convertidos', jsonresponse['tm']['1']['pl'][player]['sTwoPointersMade'])
+            jugador.add_value('tiros_2_intentados', jsonresponse['tm']['1']['pl'][player]['sTwoPointersAttempted'])
+            jugador.add_value('tiros_2_porcentaje', jsonresponse['tm']['1']['pl'][player]['sTwoPointersPercentage'])
+            jugador.add_value('tiros_3_convertidos', jsonresponse['tm']['1']['pl'][player]['sThreePointersMade'])
+            jugador.add_value('tiros_3_intentados', jsonresponse['tm']['1']['pl'][player]['sThreePointersAttempted'])
+            jugador.add_value('tiros_3_porcentaje', jsonresponse['tm']['1']['pl'][player]['sThreePointersPercentage'])
+            jugador.add_value('tiro_libre_convertido', jsonresponse['tm']['1']['pl'][player]['sFreeThrowsMade'])
+            jugador.add_value('tiro_libre_intentado', jsonresponse['tm']['1']['pl'][player]['sFreeThrowsAttempted'])
+            jugador.add_value('tiros_libre_porcentaje', jsonresponse['tm']['1']['pl'][player]['sFreeThrowsPercentage'])
+            jugador.add_value('rebote_ofensivo', jsonresponse['tm']['1']['pl'][player]['sReboundsOffensive'])
+            jugador.add_value('rebote_defensivo', jsonresponse['tm']['1']['pl'][player]['sReboundsDefensive'])
+            jugador.add_value('rebote_total', jsonresponse['tm']['1']['pl'][player]['sReboundsTotal'])
+            jugador.add_value('asistencias', jsonresponse['tm']['1']['pl'][player]['sAssists'])
+            jugador.add_value('perdidas', jsonresponse['tm']['1']['pl'][player]['sTurnovers'])
+            jugador.add_value('recuperos', jsonresponse['tm']['1']['pl'][player]['sSteals'])
+            jugador.add_value('tapones', jsonresponse['tm']['1']['pl'][player]['sBlocks'])
+            jugador.add_value('faltas_personales', jsonresponse['tm']['1']['pl'][player]['sFoulsPersonal'])
+            jugador.add_value('faltas_recibidas', jsonresponse['tm']['1']['pl'][player]['sFoulsOn'])
+            jugador.add_value('diferencia_puntos',jsonresponse['tm']['1']['pl'][player]['sPlusMinusPoints'])
+            jugador.add_value('valoración', jsonresponse['tm']['1']['pl'][player]['eff_1'])
+            yield jugador.load_item()
+                
+    
+        #EQUIPO B
+        #STATS
+        pno = jsonresponse['tm']['2']['pl'].keys()
+
+        for player in pno:
+            jugador.add_value('id_partido', matchId)
+            jugador.add_value('id_jugador', player)
+            jugador.add_value('equipo', equipoA)
+            jugador.add_value('minutos', jsonresponse['tm']['2']['pl'][player]['sMinutes'])
+            jugador.add_value('puntos', jsonresponse['tm']['2']['pl'][player]['sPoints'])
+            jugador.add_value('tiros_campo_convertidos', jsonresponse['tm']['2']['pl'][player]['sFieldGoalsMade'])
+            jugador.add_value('tiros_campo_intentados', jsonresponse['tm']['2']['pl'][player]['sFieldGoalsAttempted'])
+            jugador.add_value('tiros_campo_porcentaje', jsonresponse['tm']['2']['pl'][player]['sFieldGoalsPercentage'])
+            jugador.add_value('tiros_2_convertidos', jsonresponse['tm']['2']['pl'][player]['sTwoPointersMade'])
+            jugador.add_value('tiros_2_intentados', jsonresponse['tm']['2']['pl'][player]['sTwoPointersAttempted'])
+            jugador.add_value('tiros_2_porcentaje', jsonresponse['tm']['2']['pl'][player]['sTwoPointersPercentage'])
+            jugador.add_value('tiros_3_convertidos', jsonresponse['tm']['2']['pl'][player]['sThreePointersMade'])
+            jugador.add_value('tiros_3_intentados', jsonresponse['tm']['2']['pl'][player]['sThreePointersAttempted'])
+            jugador.add_value('tiros_3_porcentaje', jsonresponse['tm']['2']['pl'][player]['sThreePointersPercentage'])
+            jugador.add_value('tiro_libre_convertido', jsonresponse['tm']['2']['pl'][player]['sFreeThrowsMade'])
+            jugador.add_value('tiro_libre_intentado', jsonresponse['tm']['2']['pl'][player]['sFreeThrowsAttempted'])
+            jugador.add_value('tiros_libre_porcentaje', jsonresponse['tm']['2']['pl'][player]['sFreeThrowsPercentage'])
+            jugador.add_value('rebote_ofensivo', jsonresponse['tm']['2']['pl'][player]['sReboundsOffensive'])
+            jugador.add_value('rebote_defensivo', jsonresponse['tm']['2']['pl'][player]['sReboundsDefensive'])
+            jugador.add_value('rebote_total', jsonresponse['tm']['2']['pl'][player]['sReboundsTotal'])
+            jugador.add_value('asistencias', jsonresponse['tm']['2']['pl'][player]['sAssists'])
+            jugador.add_value('perdidas', jsonresponse['tm']['2']['pl'][player]['sTurnovers'])
+            jugador.add_value('recuperos', jsonresponse['tm']['2']['pl'][player]['sSteals'])
+            jugador.add_value('tapones', jsonresponse['tm']['2']['pl'][player]['sBlocks'])
+            jugador.add_value('faltas_personales', jsonresponse['tm']['2']['pl'][player]['sFoulsPersonal'])
+            jugador.add_value('faltas_recibidas', jsonresponse['tm']['2']['pl'][player]['sFoulsOn'])
+            jugador.add_value('diferencia_puntos',jsonresponse['tm']['2']['pl'][player]['sPlusMinusPoints'])
+            jugador.add_value('valoración', jsonresponse['tm']['2']['pl'][player]['eff_1'])
+            yield jugador.load_item()
+
+
+
+        

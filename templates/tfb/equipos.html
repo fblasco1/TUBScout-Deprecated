@@ -32,7 +32,7 @@
                                                 {% if equipo.zona == 'Bonaerense' %}
                                             <tr>
                                                 <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                             </tr>
                                                 {% endif %}
                                             {% endfor %}
@@ -64,7 +64,7 @@
                                                 {% if equipo.zona == 'Metropolitana' %}
                                             <tr>
                                                 <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                             </tr>
                                                 {% endif %}
                                             {% endfor %}
@@ -99,7 +99,7 @@
                                                 {% if equipo.zona == 'Cuyo' %}
                                             <tr>
                                                 <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                             </tr>
                                                 {% endif %}
                                             {% endfor %}
@@ -131,7 +131,7 @@
                                                 {% if equipo.zona == 'Patagonia' %}
                                             <tr>
                                                 <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                             </tr>
                                                 {% endif %}
                                             {% endfor %}
@@ -166,7 +166,7 @@
                                                             {% if equipo.zona == 'Centro' %}
                                                         <tr>
                                                             <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                                         </tr>
                                                             {% endif %}
                                                         {% endfor %}
@@ -198,7 +198,7 @@
                                                             {% if equipo.zona == 'Entre Rios' %}
                                                         <tr>
                                                             <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                                         </tr>
                                                             {% endif %}
                                                         {% endfor %}
@@ -233,7 +233,7 @@
                                                                         {% if equipo.zona == 'NOA' %}
                                                                     <tr>
                                                                         <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                                                     </tr>
                                                                         {% endif %}
                                                                     {% endfor %}
@@ -265,7 +265,7 @@
                                                                         {% if equipo.zona == 'NEA' %}
                                                                     <tr>
                                                                         <td style="width:50px;"><span class="round"><img src="{{equipo.urlLogo}}" alt="logo" width="50"></span></td>
-                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre}}</a></td>
+                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
                                                                     </tr>
                                                                         {% endif %}
                                                                     {% endfor %}

@@ -7,9 +7,9 @@
         <div class="card">
             <div class="card-body">
                 <center class="m-t-30"> <img src="{{jugador.urlIMG}}" class="img-square" width="100">
-                    <h3 class="card-title m-t-10">{{jugador.nombre}}</h3>
+                    <h3 class="card-title m-t-10">{{jugador.nombre}} {{jugador.apellido}}</h3>
                         <div class="row text-center justify-content-md-center">
-                            <a>{{jugador.id_equipo.nombre}}</a>
+                            <a>{{jugador.id_equipo.nombre_corto}}</a>
                         </div>
                 </center>
             <button onclick="abrir_modal_edicion('{% url 'tfb:actualizar_jugador' jugador.id %}')" class="btn btn-primary">Actualizar</button>

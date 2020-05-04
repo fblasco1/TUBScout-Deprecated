@@ -36,7 +36,7 @@
                             <tbody>
                                 <tr>
                                     <td>Equipo A</td>
-                                    <td><input class="form-group form-control-sm" type="number" name="puntoscA" id="jPuntos" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="puntosrA" id="jPuntos" placeholder="Recib."></td>
+                                    <td><input class="form-group form-control-sm" type="number" name="puntoscA" id="jPuntos" placeholder="Conv."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="tccA" id="jTCc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="tciA" id="jTCi" placeholder="Int."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="2PcA" id="j2Pc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="2PiA" id="j2Pi" placeholder="Int."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="3PcA" id="j3Pc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="3PiA" id="j3Pi" placeholder="Int."></td>
@@ -50,7 +50,7 @@
                                 </tr>
                                 <tr>
                                     <td>Equipo B</td>
-                                    <td><input class="form-group form-control-sm" type="number" name="puntoscB" id="jPuntos" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="puntosrB" id="jPuntos" placeholder="Recib."></td>
+                                    <td><input class="form-group form-control-sm" type="number" name="puntoscB" id="jPuntos" placeholder="Conv."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="tccB" id="jTCc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="tciB" id="jTCi" placeholder="Int."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="2PcB" id="j2Pc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="2PiB" id="j2Pi" placeholder="Int."></td>
                                     <td><input class="form-group form-control-sm" type="number" name="3PcB" id="j3Pc" placeholder="Conv.">-<input class="form-group form-control-sm" type="number" name="3PiB" id="j3Pi" placeholder="Int."></td>
@@ -80,12 +80,15 @@
                             <th>%TS</th>
                             <th>Eff OF</th>
                             <th>Eff DEF</th>
+                            <th>TC/AS</th>
                             <th>%TRO</th>
                             <th>%TRD</th>
                             <th>%TAS</th>
                             <th>%TREC</th>
                             <th>%TPER</th>
-                            <th>OP TL</th>
+                            <th>TLrate</th>
+                            <th>2Prate</th>
+                            <th>3Prate</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,12 +99,15 @@
                             <td>{{avanzada.ts}}</td>
                             <td>{{avanzada.efoff}}</td>
                             <td>{{avanzada.efdef}}</td>
+                            <td>{{avanzada.tcas}}</td>
                             <td>{{avanzada.tro}}</td>
                             <td>{{avanzada.trd}}</td>
                             <td>{{avanzada.tas}}</td>
                             <td>{{avanzada.trec}}</td>
                             <td>{{avanzada.tper}}</td>
                             <td>{{avanzada.optl}}</td>
+                            <td>{{avanzada.v2p}}</td>
+                            <td>{{avanzada.v3p}}</td>
                         </tr>
                     </tbody>
                 {% endfor %}

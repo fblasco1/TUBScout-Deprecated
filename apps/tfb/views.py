@@ -18,45 +18,52 @@ class CalculadoraAvanzada(View):
 
     def post(self, request, *args, **kwargs):
         #Equipo A
-        TeamA = {'ptsc':int(request.POST['puntoscA']),'ptsr':int(request.POST['puntosrA']),'tci':int(request.POST['tciA']),'T2c':int(request.POST['2PcA']),'T3c':int(request.POST['3PcA']),        
-        'TLi':int(request.POST['TLiA']),'RO':int(request.POST['ROA']),'RD':int(request.POST['RDA']),'Asist':int(request.POST['AsistA']),'Per':int(request.POST['PerA']),'Rec':int(request.POST['RecA'])}
+        TeamA = {'ptsc':int(request.POST['puntoscA']),'tcc':int(request.POST['tccA']),'tci':int(request.POST['tciA']),'T2c':int(request.POST['2PcA']),'T2i':int(request.POST['2PiA']),
+        'T3c':int(request.POST['3PcA']),'T3i':int(request.POST['3PiA']), 'TLi':int(request.POST['TLiA']),'RO':int(request.POST['ROA']),'RD':int(request.POST['RDA']),'Asist':int(request.POST['AsistA']),
+        'Per':int(request.POST['PerA']),'Rec':int(request.POST['RecA'])}
         #Equipo B
-        TeamB = {'ptsc':int(request.POST['puntoscB']),'ptsr':int(request.POST['puntosrB']),'tci':int(request.POST['tciB']),'T2c':int(request.POST['2PcB']),'T3c':int(request.POST['3PcB']),        
-        'TLi':int(request.POST['TLiB']),'RO':int(request.POST['ROB']),'RD':int(request.POST['RDB']),'Asist':int(request.POST['AsistB']),'Per':int(request.POST['PerB']),'Rec':int(request.POST['RecB'])}
+        TeamB = {'ptsc':int(request.POST['puntoscB']),'tcc':int(request.POST['tccB']),'tci':int(request.POST['tciB']),'T2c':int(request.POST['2PcB']), 'T2i':int(request.POST['2PiA']),
+        'T3c':int(request.POST['3PcB']), 'T3i':int(request.POST['3PiB']),'TLi':int(request.POST['TLiB']),'RO':int(request.POST['ROB']),'RD':int(request.POST['RDB']),'Asist':int(request.POST['AsistB']),
+        'Per':int(request.POST['PerB']),'Rec':int(request.POST['RecB'])}
         #Diccionario Avanzada
         PaceA = StatsAdvance.pace(self,tiroscampointentados= TeamA['tci'],perdidas = TeamA['Per'],tiroslibresintentados = TeamA['TLi'],reboff = TeamA['RO'])
         PaceB = StatsAdvance.pace(self,tiroscampointentados= TeamB['tci'],perdidas = TeamB['Per'],tiroslibresintentados = TeamB['TLi'],reboff = TeamB['RO'])
         avanzada = [
             {'equipo':"A",
-            'pace' :PaceA,
+            'pace'  :PaceA,
             'ptspos':StatsAdvance.ptspace(self,puntos=TeamA['ptsc'],pace = PaceA),
             'efg'   :StatsAdvance.efFG(self,doblesconvertidos = TeamA['T2c'],triplesconvertidos = TeamA['T3c'],tiroscampointentados=TeamA['tci']),
             'ts'    :StatsAdvance.ts(self,puntos=TeamA['ptsc'],tiroscampointentados=TeamA['tci'],tiroslibresintentados=TeamA['TLi']),
             'efoff' :StatsAdvance.effOff(self,puntos=TeamA['ptsc'],pace=PaceA),
-            'efdef' :StatsAdvance.effDef(self,puntosrival=TeamA['ptsr'],pace=PaceB),
+            'efdef' :StatsAdvance.effDef(self,puntosrival=TeamB['ptsc'],pace=PaceB),
+            'tcas'  :StatsAdvance.tTCAS(self,tiroscampoconvetidos=TeamA['tcc'],asistencias=TeamA['Asist']),
             'tro'   :StatsAdvance.tRO(self,rebof=TeamA['RO'],rebdef=TeamA['RD']),
             'trd'   :StatsAdvance.tRD(self,rebdef=TeamA['RD'],reboff=TeamA['RO']),
             'tas'   :StatsAdvance.tAS(self,asistencias=TeamA['Asist'],pace=PaceA),
-            'asper':StatsAdvance.tASPER(self,asistencias=TeamA['Asist'],perdidas=TeamA['Per']),
+            'asper' :StatsAdvance.tASPER(self,asistencias=TeamA['Asist'],perdidas=TeamA['Per']),
             'trec'  :StatsAdvance.tREC(self,recuperos=TeamA['Rec'],pace=PaceA),
             'tper'  :StatsAdvance.tPER(self,perdidas=TeamA['Per'],pace=PaceA),
-            'optl'  :StatsAdvance.opTL(self,tiroslibresconvertidos=TeamA['TLi'],tiroscampointentados=TeamA['tci'])},
+            'optl'  :StatsAdvance.VTLTC(self,tiroslibresintentados=TeamA['TLi'],tiroscampointentados=TeamA['tci']),
+            'v2p'   :StatsAdvance.V2PTC(self,doblesintentados=TeamA['T2i'],tiroscampointentados=TeamA['tci']),
+            'v3p'   :StatsAdvance.V3PTC(self,triplesintentados=TeamA['T3i'],tiroscampointentados=TeamA['tci'])},
             {'equipo':"B",
              'pace'  :PaceB,
              'ptspos':StatsAdvance.ptspace(self,puntos=TeamB['ptsc'],pace = PaceB),
              'efg'   :StatsAdvance.efFG(self,doblesconvertidos = TeamB['T2c'],triplesconvertidos =TeamB['T3c'],tiroscampointentados=TeamB['tci']),
              'ts'    :StatsAdvance.ts(self,puntos=TeamB['ptsc'],tiroscampointentados=TeamB['tci'],tiroslibresintentados=TeamB['TLi']),
              'efoff' :StatsAdvance.effOff(self,puntos=TeamB['ptsc'],pace=PaceB),
-             'efdef' :StatsAdvance.effDef(self,puntosrival=TeamB['ptsr'],pace=PaceA),
+             'efdef' :StatsAdvance.effDef(self,puntosrival=TeamA['ptsc'],pace=PaceA),
+             'tcas'  :StatsAdvance.tTCAS(self,tiroscampoconvetidos=TeamB['tcc'],asistencias=TeamB['Asist']),
              'tro'   :StatsAdvance.tRO(self,rebof=TeamB['RO'],rebdef=TeamB['RD']),
              'trd'   :StatsAdvance.tRD(self,rebdef=TeamB['RD'],reboff=TeamB['RO']),
              'tas'   :StatsAdvance.tAS(self,asistencias=TeamB['Asist'],pace=PaceB),
-             'asper':StatsAdvance.tASPER(self,asistencias=TeamB['Asist'],perdidas=TeamB['Per']),
+             'asper' :StatsAdvance.tASPER(self,asistencias=TeamB['Asist'],perdidas=TeamB['Per']),
              'trec'  :StatsAdvance.tREC(self,recuperos=TeamB['Rec'],pace=PaceB),
              'tper'  :StatsAdvance.tPER(self,perdidas=TeamB['Per'],pace=PaceB),
-             'optl'  :StatsAdvance.opTL(self,tiroslibresconvertidos=TeamB['TLi'],tiroscampointentados=TeamB['tci'])}
+             'optl'  :StatsAdvance.VTLTC(self,tiroslibresintentados=TeamB['TLi'],tiroscampointentados=TeamB['tci']),
+             'v2p'   :StatsAdvance.V2PTC(self,doblesintentados=TeamB['T2i'],tiroscampointentados=TeamB['tci']),
+             'v3p'   :StatsAdvance.V3PTC(self,triplesintentados=TeamB['T3i'],tiroscampointentados=TeamB['tci'])},
              ]
-
         return render(request, self.template_name, {'avanzadas': avanzada})
 
 class ListarEquipo(ListView):
@@ -70,7 +77,12 @@ class DetalleEquipo(ListView):
 
     def get_context_data(self,**kwargs):
         contexto = {}
-        contexto['estadisticas'] = Estadistica_Equipo_Partido.objects.filter(id_equipo= self.kwargs['pk']).aggregate(puntos = Avg('puntos'),
+        contexto['estadisticas'] = Estadistica_Equipo_Partido.objects.filter(id_equipo= self.kwargs['pk']).aggregate(
+                                                                                            puntos = Avg('puntos'),
+                                                                                            q1     = Avg('q1'),
+                                                                                            q2     = Avg('q2'),
+                                                                                            q3     = Avg('q3'),
+                                                                                            q4     = Avg('q4'),
                                                                                             tiros_campo_convertidos = Sum('tiros_campo_convertidos'),
                                                                                             tiros_campo_intentados = Sum('tiros_campo_intentados'),
                                                                                             tiros_campo_porcentaje = Case(
@@ -105,12 +117,15 @@ class DetalleEquipo(ListView):
                                                                                             true_shooting = Avg('true_shooting'),
                                                                                             eficiencia_ofensiva = Avg('eficiencia_ofensiva'),
                                                                                             eficiencia_defensiva = Avg('eficiencia_defensiva'),
+                                                                                            tiros_campo_asistidos = Avg('tiros_campo_asistidos'),
                                                                                             tasa_rebote_ofensivo = Avg('tasa_rebote_ofensivo'),
                                                                                             tasa_rebote_defensivo = Avg('tasa_rebote_defensivo'),
                                                                                             tasa_recuperos = Avg('tasa_recuperos'),
                                                                                             tasa_asistencias = Avg('tasa_asistencias'),
                                                                                             tasa_perdidas = Avg('tasa_perdidas'),
-                                                                                            oportunidad_tiro_libre = Avg('oportunidad_tiro_libre'),
+                                                                                            tl_rate = Avg('tl_rate'),
+                                                                                            p2_rate = Avg('p2_rate'),
+                                                                                            p3_rate = Avg('p3_rate'),
                                                                                             puntos_de_perdidas = Avg('puntos_de_perdidas'),
                                                                                             puntos_pintura = Avg('puntos_pintura'),
                                                                                             puntos_contraataque = Avg('puntos_contraataque'),
@@ -179,14 +194,17 @@ class DetalleJugador(ListView):
                                                                                        valoración = Avg('valoración'),
                                                                                        pace = Avg('pace'),
                                                                                        ptspace = Avg('ptspace'),
-                                                                                       effOf = Avg('effOf'),
-                                                                                       efFG = Avg('efFG'),
-                                                                                       ts = Avg('ts'),
-                                                                                       tas = Avg('tas'),
-                                                                                       asper = Avg('asper'),
-                                                                                       tper = Avg('tper'),
-                                                                                       trec = Avg('trec'),
-                                                                                       opTL = Avg('opTL'),                                                 
+                                                                                       usg = Avg('usg'),
+                                                                                       effOf = Avg('eficiencia_ofensiva'),
+                                                                                       efFG = Avg('eficiencia_tiro_campo'),
+                                                                                       ts = Avg('true_shooting'),
+                                                                                       tas = Avg('tasa_asistencias'),
+                                                                                       asper = Avg('tasa_as_per'),
+                                                                                       tper = Avg('tasa_perdidas'),
+                                                                                       trec = Avg('tasa_recuperos'),
+                                                                                       tl_rate = Avg('tl_rate'),
+                                                                                       p2_rate = Avg('p2_rate'),
+                                                                                       p3_rate = Avg('p3_rate'),                                                 
                                                                                     )
 
     def get_context_data(self,**kwargs):
