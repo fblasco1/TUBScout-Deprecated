@@ -11,13 +11,12 @@ from TUBSClass import StatsAdvance
 import datetime
 
 class ScraperPipeline(object):
-    
     def __init__(self, *args, **kwargs):
         super(ScraperPipeline, self).__init__(*args, **kwargs)
-        self.errorplayer = []
+        self.error = []
 
     def close_spider(self,spider):
-        print(self.errorplayer)
+        print(self.error)
 
     def process_item(self, item, spider):
         if isinstance(item, PartidoItem):
@@ -32,105 +31,106 @@ class ScraperPipeline(object):
             return self.handleStatsPlayer(item, spider)
     
     def handlePartido(self,item,spider):
-        id_partido      = item['id_partido'].pop()
-        detalle_partido = item['detalle_partido'].pop().split(' ')[3]
+        id_partido      = item['id_partido']
+        detalle_partido = item['detalle_partido'].split(' ')[3]
         partido = Partidos.objects.create(id_partido = id_partido, detalle_partido = datetime.date(int(detalle_partido.split('/')[2]),int(detalle_partido.split('/')[1]),int(detalle_partido.split('/')[0])))
         return partido
 
     def handleEquipo(self,item,spider):
-        nombre_largo = item['nombre_largo'].pop()
-        nombre_corto = item['nombre_corto'].pop()
-        urlLogo      = item['urlLogo'].pop()
-        equipo, created = Equipos.objects.get_or_create(nombre_corto = nombre_corto, defaults = {'nombre_largo': nombre_largo, 'nombre_corto': nombre_corto, 'urlLogo': urlLogo})          
+        nombre_largo = item['nombre_largo']
+        nombre_corto = item['nombre_corto']
+        urlLogo      = item['urlLogo']
+        equipo, created = Equipos.objects.get_or_create(nombre_largo = nombre_largo, defaults = {'nombre_largo': nombre_largo, 'nombre_corto': nombre_corto, 'urlLogo': urlLogo})          
         return equipo
 
     def handleJugador(self,item,spider):
-        equipo      = Equipos.objects.get(nombre_corto__exact = item['equipo'].pop())
-        id_jugador  = item['id_jugador'].pop()
-        nombre      = item['nombre'].pop()
-        apellido    = item['apellido'].pop()
-        urlIMG      = item['urlIMG'].pop()
-        if urlIMG is "":
-            jugador, created = Jugadores.objects.update_or_create(id_equipo = equipo, id_jugador = id_jugador, defaults = {'id_equipo': equipo, 'id_jugador': id_jugador, 'nombre': nombre,'apellido': apellido, 'urlIMG':urlIMG})    
-        else:
-            try:
-                jugador = Jugadores.objects.get(urlIMG = urlIMG)
-                jugador.id_equipo  = equipo
-                jugador.id_jugador = id_jugador
-                jugador.save()
-            except Jugadores.DoesNotExist:
-                jugador, created = Jugadores.objects.update_or_create(id_equipo = equipo, id_jugador = id_jugador, defaults = {'id_equipo': equipo, 'id_jugador': id_jugador, 'nombre': nombre,'apellido': apellido, 'urlIMG':urlIMG})          
-        return jugador
+        objeto = zip(*item.values())
+        for linea in list(objeto):
+            equipo      = Equipos.objects.get(nombre_largo__exact = linea[3])
+            id_jugador  = linea[0]
+            nombre      = linea[1]
+            apellido    = linea[2]
+            urlIMG      = linea[4]
+            if urlIMG is 1:
+                jugador, created = Jugadores.objects.update_or_create(id_equipo = equipo, id_jugador = id_jugador, defaults = {'id_equipo': equipo, 'id_jugador': id_jugador, 'nombre': nombre,'apellido': apellido, 'urlIMG':urlIMG})    
+            else:
+                try:
+                    jugador            = Jugadores.objects.get(urlIMG = urlIMG)
+                    aux                = Jugadores.objects.get(id_jugador=id_jugador, id_equipo=equipo)
+                except Jugadores.DoesNotExist:
+                    jugador, created   = Jugadores.objects.update_or_create(id_equipo = equipo, id_jugador = id_jugador, defaults = {'id_equipo': equipo, 'id_jugador': id_jugador, 'nombre': nombre,'apellido': apellido, 'urlIMG':urlIMG})          
+        
+        return item
 
     def handleStatsTeam(self,item,spider):
         #PARTIDO
-        id_partido   = Partidos.objects.get(id_partido = item['id_partido'].pop())
+        id_partido   = Partidos.objects.get(id_partido = item['id_partido'])
         #EQUIPOS
-        id_equipoA   = Equipos.objects.get(nombre_corto__exact = item['equipoA'].pop())       
-        id_equipoB   = Equipos.objects.get(nombre_corto__exact = item['equipoB'].pop())
+        id_equipoA   = Equipos.objects.get(nombre_largo__exact = item['equipoA'])       
+        id_equipoB   = Equipos.objects.get(nombre_largo__exact = item['equipoB'])
         #ESTADISTICAS
-        puntosA = item['puntosA'].pop() 
-        puntosB = item['puntosB'].pop()
-        q1A     = item['q1A'].pop()
-        q1B     = item['q1B'].pop()
-        q2A     = item['q2A'].pop()
-        q2B     = item['q2B'].pop()
-        q3A     = item['q3A'].pop()
-        q3B     = item['q3B'].pop()
-        q4A     = item['q4A'].pop()
-        q4B     = item['q4B'].pop()
-        tccA    = item['tccA'].pop()
-        tccB    = item['tccB'].pop()
-        tciA    = item['tciA'].pop()
-        tciB    = item['tciB'].pop()
-        tcpA    = item['tcpA'].pop()
-        tcpB    = item['tcpB'].pop()
-        t2cA    = item['t2cA'].pop()
-        t2cB    = item['t2cB'].pop()
-        t2iA    = item['t2iA'].pop()
-        t2iB    = item['t2iB'].pop()
-        t2pA    = item['t2pA'].pop()
-        t2pB    = item['t2pB'].pop()
-        t3cA    = item['t3cA'].pop()
-        t3cB    = item['t3cB'].pop()
-        t3iA    = item['t3iA'].pop()
-        t3iB    = item['t3iB'].pop()
-        t3pA    = item['t3pA'].pop()
-        t3pB    = item['t3pB'].pop()
-        tlcA    = item['tlcA'].pop()
-        tlcB    = item['tlcB'].pop()
-        tliA    = item['tliA'].pop()
-        tliB    = item['tliB'].pop()  
-        tlpA    = item['tlpA'].pop()
-        tlpB    = item['tlpB'].pop()
-        roA     = item['roA'].pop()
-        roB     = item['roB'].pop()
-        rdA     = item['rdA'].pop()
-        rdB     = item['rdB'].pop()
-        rtA     = item['rtA'].pop()
-        rtB     = item['rtB'].pop()
-        asisA   = item['asisA'].pop()
-        asisB   = item['asisB'].pop()
-        perA    = item['perA'].pop()
-        perB    = item['perB'].pop()
-        recA    = item['recA'].pop()
-        recB    = item['recB'].pop()
-        tapA    = item['tapA'].pop()
-        tapB    = item['tapB'].pop()
-        fpA     = item['fpA'].pop()
-        fpB     = item['fpB'].pop()
-        valA    = item['valA'].pop()
-        valB    = item['valB'].pop()
-        ptssupA = item['puntos_bancaA'].pop()
-        ptssupB = item['puntos_bancaB'].pop()
-        ptspinA = item['puntos_pinturaA'].pop()
-        ptspinB = item['puntos_pinturaB'].pop()
-        ptsroA  = item['puntos_roA'].pop()
-        ptsroB  = item['puntos_roB'].pop()
-        ptsctaA = item['puntos_contraataqueA'].pop()
-        ptsctaB = item['puntos_contraataqueB'].pop()
-        ptsperA = item['puntos_de_perdidasA'].pop()
-        ptsperB = item['puntos_de_perdidasB'].pop()
+        puntosA = item['puntosA'] 
+        puntosB = item['puntosB']
+        q1A     = item['q1A']
+        q1B     = item['q1B']
+        q2A     = item['q2A']
+        q2B     = item['q2B']
+        q3A     = item['q3A']
+        q3B     = item['q3B']
+        q4A     = item['q4A']
+        q4B     = item['q4B']
+        tccA    = item['tccA']
+        tccB    = item['tccB']
+        tciA    = item['tciA']
+        tciB    = item['tciB']
+        tcpA    = item['tcpA']
+        tcpB    = item['tcpB']
+        t2cA    = item['t2cA']
+        t2cB    = item['t2cB']
+        t2iA    = item['t2iA']
+        t2iB    = item['t2iB']
+        t2pA    = item['t2pA']
+        t2pB    = item['t2pB']
+        t3cA    = item['t3cA']
+        t3cB    = item['t3cB']
+        t3iA    = item['t3iA']
+        t3iB    = item['t3iB']
+        t3pA    = item['t3pA']
+        t3pB    = item['t3pB']
+        tlcA    = item['tlcA']
+        tlcB    = item['tlcB']
+        tliA    = item['tliA']
+        tliB    = item['tliB']  
+        tlpA    = item['tlpA']
+        tlpB    = item['tlpB']
+        roA     = item['roA']
+        roB     = item['roB']
+        rdA     = item['rdA']
+        rdB     = item['rdB']
+        rtA     = item['rtA']
+        rtB     = item['rtB']
+        asisA   = item['asisA']
+        asisB   = item['asisB']
+        perA    = item['perA']
+        perB    = item['perB']
+        recA    = item['recA']
+        recB    = item['recB']
+        tapA    = item['tapA']
+        tapB    = item['tapB']
+        fpA     = item['fpA']
+        fpB     = item['fpB']
+        valA    = item['valA']
+        valB    = item['valB']
+        ptssupA = item['puntos_bancaA']
+        ptssupB = item['puntos_bancaB']
+        ptspinA = item['puntos_pinturaA']
+        ptspinB = item['puntos_pinturaB']
+        ptsroA  = item['puntos_roA']
+        ptsroB  = item['puntos_roB']
+        ptsctaA = item['puntos_contraataqueA']
+        ptsctaB = item['puntos_contraataqueB']
+        ptsperA = item['puntos_de_perdidasA']
+        ptsperB = item['puntos_de_perdidasB']
         #RESULTADO
         ResA = 2
         ResB = 2
@@ -305,121 +305,119 @@ class ScraperPipeline(object):
         return item
 
     def handleStatsPlayer(self, item, spider):
-        #PARTIDO
-        id_partido   = Partidos.objects.get(id_partido = item['id_partido'].pop())
-        #INFO JUGADOR
-        idequipo = item['equipo'].pop()
-        idjug = item['id_jugador'].pop()
-        try:
-            id_equipo    = Equipos.objects.get(nombre_corto__exact = idequipo)
-        except Equipos.DoesNotExist:    
-            raise DropItem(item)
-            self.errorplayer.append(str('el equipo' + idequipo +'no existe'+ id_partido)) 
-            raise
-        try:         
-            id_jugador   = Jugadores.objects.get(id_equipo = id_equipo, id_jugador = idjug)
-        except Jugadores.DoesNotExist:
-            raise DropItem(item)
-            self.errorplayer.append(str(idjug + '-' + idequipo + '-' + id_partido))
-        #ESTADISTICAS
-        puntos  = item['puntos'].pop() 
-        minutos = item['minutos'].pop()
-        tcc     = item['tiros_campo_convertidos'].pop()
-        tci     = item['tiros_campo_intentados'].pop()
-        tcp     = item['tiros_campo_porcentaje'].pop()
-        t2c     = item['tiros_2_convertidos'].pop()
-        t2i     = item['tiros_2_intentados'].pop()
-        t2p     = item['tiros_2_porcentaje'].pop()
-        t3c     = item['tiros_3_convertidos'].pop()
-        t3i     = item['tiros_3_intentados'].pop()
-        t3p     = item['tiros_3_porcentaje'].pop()
-        tlc     = item['tiro_libre_convertido'].pop()
-        tli     = item['tiro_libre_intentado'].pop()  
-        tlp     = item['tiros_libre_porcentaje'].pop()
-        ro      = item['rebote_ofensivo'].pop()
-        rd      = item['rebote_defensivo'].pop()
-        rt      = item['rebote_total'].pop()
-        asis    = item['asistencias'].pop()
-        per     = item['perdidas'].pop()
-        rec     = item['recuperos'].pop()
-        tap     = item['tapones'].pop()
-        fp      = item['faltas_personales'].pop()
-        fr      = item['faltas_recibidas'].pop()
-        difpt   = item['diferencia_puntos'].pop()
-        val     = item['valoración'].pop()
+        objeto = zip(*item.values())
+        for linea in list(objeto):        
+            #PARTIDO
+            id_partido   = Partidos.objects.get(id_partido = linea[0])
+            #INFO JUGADOR 
+            try:
+                id_equipo    = Equipos.objects.get(nombre_largo__exact = linea[4])
+            except Equipos.DoesNotExist:
+                id_equipo    = Equipos.objects.get(nombre_corto__exact = linea[5])      
+            id_jugador, created   = Jugadores.objects.get_or_create(id_equipo = id_equipo, id_jugador = linea[1], defaults = {'id_equipo': id_equipo, 'id_jugador': linea[1], 'nombre': linea[2],'apellido': linea[3]})
+            #ESTADISTICAS
+            minutos = linea[6].split(':')
+            if int(minutos[1]) > 59:
+               minutos[0] = int(minutos[0]) + 1
+               minutos = str(str(minutos[0])+':'+'0')
+            else:
+               minutos = str(minutos[0]+':'+minutos[1])
+            puntos  = linea[7]
+            tcc     = linea[8]
+            tci     = linea[9]
+            tcp     = linea[10]
+            t2c     = linea[11]
+            t2i     = linea[12]
+            t2p     = linea[13]
+            t3c     = linea[14]
+            t3i     = linea[15]
+            t3p     = linea[16]
+            tlc     = linea[17]
+            tli     = linea[18]  
+            tlp     = linea[19]
+            ro      = linea[20]
+            rd      = linea[21]
+            rt      = linea[22]
+            asis    = linea[23]
+            per     = linea[24]
+            rec     = linea[25]
+            tap     = linea[26]
+            fp      = linea[27]
+            fr      = linea[28]
+            difpt   = linea[29]
+            val     = linea[30]
         #ESTADISTICAS AVANZADAS
         #PACE
-        pace                = StatsAdvance.pace(self,tiroscampointentados= float(tci) ,perdidas= float(per), tiroslibresintentados=float(tli),reboff=float(ro))
+            pace                = StatsAdvance.pace(self,tiroscampointentados= float(tci) ,perdidas= float(per), tiroslibresintentados=float(tli),reboff=float(ro))
         #PTSPACE
-        ptsxpace            = StatsAdvance.ptspace(self,puntos=float(puntos),pace=pace)
+            ptsxpace            = StatsAdvance.ptspace(self,puntos=float(puntos),pace=pace)
         #EFICIENCIA DE TIRO
-        efFG                = StatsAdvance.efFG(self,doblesconvertidos=float(t2c),triplesconvertidos=float(t3c),tiroscampointentados=float(tci))
+            efFG                = StatsAdvance.efFG(self,doblesconvertidos=float(t2c),triplesconvertidos=float(t3c),tiroscampointentados=float(tci))
         #TRUE SHOOTING
-        tS                  = StatsAdvance.ts(self,puntos=float(puntos),tiroscampointentados=float(tci),tiroslibresintentados=float(tli))
+            tS                  = StatsAdvance.ts(self,puntos=float(puntos),tiroscampointentados=float(tci),tiroslibresintentados=float(tli))
         #EFICIENCIA OFENSIVA
-        effOF               = StatsAdvance.effOff(self,puntos=float(puntos),pace=pace)
+            effOF               = StatsAdvance.effOff(self,puntos=float(puntos),pace=pace)
         #PORCENTAJE ASISTENCIAS POR POSESION
-        tAs                 = StatsAdvance.tAS(self,asistencias=float(asis),pace=pace)
+            tAs                 = StatsAdvance.tAS(self,asistencias=float(asis),pace=pace)
         #PORCENTAJE ASISTENCIAS POR PERDIDA
-        tAsPer              = StatsAdvance.tASPER(self,asistencias=float(asis) ,perdidas=float(per))
+            tAsPer              = StatsAdvance.tASPER(self,asistencias=float(asis) ,perdidas=float(per))
         #PORCENTAJE RECUPEROS POR POSESION
-        tRec                = StatsAdvance.tREC(self,recuperos=float(rec),pace= pace)
+            tRec                = StatsAdvance.tREC(self,recuperos=float(rec),pace= pace)
         #PORCENTAJE PERDIDAS POR POSESION
-        tPer                = StatsAdvance.tPER(self,perdidas=float(per),pace= pace)
+            tPer                = StatsAdvance.tPER(self,perdidas=float(per),pace= pace)
         #PORCENTAJE TAPAS POR POSESION
-        tTap                = StatsAdvance.tTAP(self,tapones=float(tap),pace= pace)
+            tTap                = StatsAdvance.tTAP(self,tapones=float(tap),pace= pace)
         #VOLUMEN TIROS LIBRES SOBRE TIRO CAMPO
-        vTL                 = StatsAdvance.VTLTC(self,tiroslibresintentados=float(tli) ,tiroscampointentados= float(tci))
+            vTL                 = StatsAdvance.VTLTC(self,tiroslibresintentados=float(tli) ,tiroscampointentados= float(tci))
         #VOLUMEN TIROS DE 2 SOBRE TIRO CAMPO
-        v2P                 = StatsAdvance.V2PTC(self,doblesintentados=float(t2i) ,tiroscampointentados= float(tci))
+            v2P                 = StatsAdvance.V2PTC(self,doblesintentados=float(t2i) ,tiroscampointentados= float(tci))
         #VOLUMEN TIROS DE 3 SOBRE TIRO CAMPO
-        v3P                 = StatsAdvance.V3PTC(self,triplesintentados=float(t3i) ,tiroscampointentados= float(tci))
+            v3P                 = StatsAdvance.V3PTC(self,triplesintentados=float(t3i) ,tiroscampointentados= float(tci))
         #USO OFENSIVO
-        usg                 = StatsAdvance.USG(self,tiroslibresintentados=tli,tiroscampointentados=tci,perdidas=per,pace=pace)
+            usg                 = StatsAdvance.USG(self,tiroslibresintentados=tli,tiroscampointentados=tci,perdidas=per,pace=pace)
         
-        jugador             = Estadistica_Jugador_Partido.objects.create(
-            id_partido              = id_partido,
-            id_jugador              = id_jugador,
-            puntos                  = puntos,
-            minutos                 = datetime.datetime.strptime(minutos,'%M:%S').time(),        
-            tiros_campo_convertidos = tcc,
-            tiros_campo_intentados  = tci,
-            tiros_campo_porcentaje  = tcp,
-            tiros_2_convertidos     = t2c,
-            tiros_2_intentados      = t2i,
-            tiros_2_porcentaje      = t2p,
-            tiros_3_convertidos     = t3c,
-            tiros_3_intentados      = t3i,
-            tiros_3_porcentaje      = t3p,
-            tiro_libre_convertido   = tlc,
-            tiro_libre_intentado    = tli,
-            tiros_libre_porcentaje  = tlp,
-            rebote_ofensivo         = ro,
-            rebote_defensivo        = rd,
-            rebote_total            = rt,
-            asistencias             = asis,
-            perdidas                = per,
-            recuperos               = rec,
-            tapones                 = tap,
-            faltas_personales       = fp,
-            faltas_recibidas        = fr,
-            diferencia_puntos       = difpt,
-            valoración              = val,
-            pace                    = pace,
-            ptspace                 = ptsxpace,
-            eficiencia_tiro_campo   = efFG,
-            true_shooting           = tS,
-            eficiencia_ofensiva     = effOF,
-            tasa_tapones            = tTap,
-            tasa_asistencias        = tAs,
-            tasa_perdidas           = tPer,
-            tasa_as_per             = tAsPer,
-            tasa_recuperos          = tRec,
-            tl_rate                 = vTL,
-            p2_rate                 = v2P,
-            p3_rate                 = v3P,
-            usg                     = usg,
-            )
-        
-        return item
+            jugador             = Estadistica_Jugador_Partido.objects.create(
+                id_partido              = id_partido,
+                id_jugador              = id_jugador,
+                puntos                  = puntos,
+                minutos                 = datetime.datetime.strptime(minutos,'%M:%S').time(),        
+                tiros_campo_convertidos = tcc,
+                tiros_campo_intentados  = tci,
+                tiros_campo_porcentaje  = tcp,
+                tiros_2_convertidos     = t2c,
+                tiros_2_intentados      = t2i,
+                tiros_2_porcentaje      = t2p,
+                tiros_3_convertidos     = t3c,
+                tiros_3_intentados      = t3i,
+                tiros_3_porcentaje      = t3p,
+                tiro_libre_convertido   = tlc,
+                tiro_libre_intentado    = tli,
+                tiros_libre_porcentaje  = tlp,
+                rebote_ofensivo         = ro,
+                rebote_defensivo        = rd,
+                rebote_total            = rt,
+                asistencias             = asis,
+                perdidas                = per,
+                recuperos               = rec,
+                tapones                 = tap,
+                faltas_personales       = fp,
+                faltas_recibidas        = fr,
+                diferencia_puntos       = difpt,
+                valoración              = val,
+                pace                    = pace,
+                ptspace                 = ptsxpace,
+                eficiencia_tiro_campo   = efFG,
+                true_shooting           = tS,
+                eficiencia_ofensiva     = effOF,
+                tasa_tapones            = tTap,
+                tasa_asistencias        = tAs,
+                tasa_perdidas           = tPer,
+                tasa_as_per             = tAsPer,
+                tasa_recuperos          = tRec,
+                tl_rate                 = vTL,
+                p2_rate                 = v2P,
+                p3_rate                 = v3P,
+                usg                     = usg,
+                )
+        return objeto
 

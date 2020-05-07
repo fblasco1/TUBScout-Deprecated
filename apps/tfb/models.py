@@ -19,7 +19,7 @@ ESTADO_JUGADOR_CHOICE = (
 
 class Jugadores(models.Model):
     id          = models.AutoField(primary_key= True)
-    id_jugador  = models.CharField(max_length=10 ,blank=False, null=False)
+    id_jugador  = models.IntegerField(blank=False, null=False)
     id_equipo   = models.ForeignKey(Equipos, on_delete = models.CASCADE)
     nombre      = models.CharField (max_length=255,blank=False, null=False)
     apellido    = models.CharField (max_length=255,blank=False, null=False)

@@ -73,8 +73,8 @@ class JugadoresSpider(scrapy.Spider):
 
         jsonresponse = json.loads(response.text)
         
-        equipoA = jsonresponse['tm']['1']['shortName']
-        equipoB = jsonresponse['tm']['2']['shortName']
+        equipoA = jsonresponse['tm']['1']['name']
+        equipoB = jsonresponse['tm']['2']['name']
 
         #PLANTEL
         #JUGADORES A
@@ -84,14 +84,13 @@ class JugadoresSpider(scrapy.Spider):
             try: 
                 foto= jsonresponse['tm']['1']['pl'][player]['photoT'].replace('\/','/')
             except KeyError:
-                foto= ""
+                foto= 1
             
             plantel.add_value('id_jugador', player)
             plantel.add_value('nombre', jsonresponse['tm']['1']['pl'][player]['firstName'])
             plantel.add_value('apellido', jsonresponse['tm']['1']['pl'][player]['familyName'])
             plantel.add_value('equipo', equipoA)
             plantel.add_value('urlIMG',  foto)
-            yield plantel.load_item()
         
         pno = jsonresponse['tm']['2']['pl'].keys()
     
@@ -99,14 +98,15 @@ class JugadoresSpider(scrapy.Spider):
             try: 
                 foto = jsonresponse['tm']['2']['pl'][player]['photoT'].replace('\/','/')
             except KeyError:
-                foto = ""
+                foto = 1
 
             plantel.add_value('id_jugador', player)
             plantel.add_value('nombre', jsonresponse['tm']['2']['pl'][player]['firstName'])
             plantel.add_value('apellido', jsonresponse['tm']['2']['pl'][player]['familyName'])
             plantel.add_value('equipo', equipoB)
             plantel.add_value('urlIMG', foto)
-            yield plantel.load_item()
+        
+        yield plantel.load_item()
         
 class StatsSpider(scrapy.Spider):
     name = 'stats'
@@ -120,16 +120,18 @@ class StatsSpider(scrapy.Spider):
         """
             Stats del partido
         """
-        equipo   = ItemLoader(item=StatsTeamItem(), response= response)
+      #  equipo   = ItemLoader(item=StatsTeamItem(), response= response)
         jugador  = ItemLoader(item=StatsPlayerItem(), response= response)
         
         jsonresponse = json.loads(response.text)
 
         matchId = response.url.split('/')[4]
 
-        equipoA = jsonresponse['tm']['1']['shortName']
-        equipoB = jsonresponse['tm']['2']['shortName']
-
+        nombrelargoA = jsonresponse['tm']['1']['name']
+        nombrelargoB = jsonresponse['tm']['2']['name']
+        nombrecortoA = jsonresponse['tm']['1']['shortName']
+        nombrecortoB = jsonresponse['tm']['2']['shortName']
+        """
         #STATS EQUIPOS
         equipo.add_value('id_partido', matchId)
         equipo.add_value('equipoA', equipoA)
@@ -200,7 +202,7 @@ class StatsSpider(scrapy.Spider):
         equipo.add_value('puntos_pinturaB', jsonresponse['tm']['2']['tot_sPointsInThePaint'])
         equipo.add_value('puntos_roB', jsonresponse['tm']['2']['tot_sPointsSecondChance'])
         yield equipo.load_item()
-        
+        """     
         #JUGADORES
         #EQUIPO A
         #STATS
@@ -209,7 +211,10 @@ class StatsSpider(scrapy.Spider):
         for player in pno:
             jugador.add_value('id_partido', matchId)
             jugador.add_value('id_jugador', player)
-            jugador.add_value('equipo', equipoA)
+            jugador.add_value('nombre', jsonresponse['tm']['1']['pl'][player]['firstName'])
+            jugador.add_value('apellido', jsonresponse['tm']['1']['pl'][player]['familyName'])
+            jugador.add_value('nombrelargo', nombrelargoA)
+            jugador.add_value('nombrecorto', nombrecortoA)
             jugador.add_value('minutos', jsonresponse['tm']['1']['pl'][player]['sMinutes'])
             jugador.add_value('puntos', jsonresponse['tm']['1']['pl'][player]['sPoints'])
             jugador.add_value('tiros_campo_convertidos', jsonresponse['tm']['1']['pl'][player]['sFieldGoalsMade'])
@@ -235,9 +240,6 @@ class StatsSpider(scrapy.Spider):
             jugador.add_value('faltas_recibidas', jsonresponse['tm']['1']['pl'][player]['sFoulsOn'])
             jugador.add_value('diferencia_puntos',jsonresponse['tm']['1']['pl'][player]['sPlusMinusPoints'])
             jugador.add_value('valoración', jsonresponse['tm']['1']['pl'][player]['eff_1'])
-            yield jugador.load_item()
-                
-    
         #EQUIPO B
         #STATS
         pno = jsonresponse['tm']['2']['pl'].keys()
@@ -245,7 +247,10 @@ class StatsSpider(scrapy.Spider):
         for player in pno:
             jugador.add_value('id_partido', matchId)
             jugador.add_value('id_jugador', player)
-            jugador.add_value('equipo', equipoA)
+            jugador.add_value('nombre', jsonresponse['tm']['2']['pl'][player]['firstName'])
+            jugador.add_value('apellido', jsonresponse['tm']['2']['pl'][player]['familyName'])
+            jugador.add_value('nombrelargo', nombrelargoB)
+            jugador.add_value('nombrecorto', nombrecortoB)
             jugador.add_value('minutos', jsonresponse['tm']['2']['pl'][player]['sMinutes'])
             jugador.add_value('puntos', jsonresponse['tm']['2']['pl'][player]['sPoints'])
             jugador.add_value('tiros_campo_convertidos', jsonresponse['tm']['2']['pl'][player]['sFieldGoalsMade'])
@@ -271,7 +276,7 @@ class StatsSpider(scrapy.Spider):
             jugador.add_value('faltas_recibidas', jsonresponse['tm']['2']['pl'][player]['sFoulsOn'])
             jugador.add_value('diferencia_puntos',jsonresponse['tm']['2']['pl'][player]['sPlusMinusPoints'])
             jugador.add_value('valoración', jsonresponse['tm']['2']['pl'][player]['eff_1'])
-            yield jugador.load_item()
+        yield jugador.load_item()
 
 
 
