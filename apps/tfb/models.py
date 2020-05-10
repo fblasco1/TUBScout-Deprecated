@@ -5,7 +5,8 @@ class Equipos(models.Model):
     nombre_largo    = models.CharField (max_length=50, blank=False, null=False)
     nombre_corto    = models.CharField (max_length=50, blank=False, null=False)
     zona            = models.CharField (max_length= 255, blank= False, null=False)
-    urlLogo         = models.URLField(blank= True, null= True)
+    logoS           = models.URLField(blank= True, null= True)
+    logoL           = models.URLField(blank= True, null= True)
     class Meta:
         ordering = ['zona', 'nombre_corto']
     def __str__ (self) : 
@@ -23,12 +24,13 @@ class Jugadores(models.Model):
     id_equipo   = models.ForeignKey(Equipos, on_delete = models.CASCADE)
     nombre      = models.CharField (max_length=255,blank=False, null=False)
     apellido    = models.CharField (max_length=255,blank=False, null=False)
-    urlIMG      = models.URLField (blank= True, null = True)
+    photoS      = models.URLField (blank= True, null = True)
+    photoL      = models.URLField (blank= True, null = True)
     estado      = models.CharField(max_length=3,default='A',choices=ESTADO_JUGADOR_CHOICE)
     class Meta:
         ordering = ['id_equipo']
     def __str__(self):
-        return (self.nombre + self.apellido)
+        return (self.nombre+' '+self.apellido)
 
 class Partidos(models.Model):
     id_partido      = models.IntegerField(primary_key=True, serialize=False, verbose_name='Id Partido')
@@ -93,6 +95,7 @@ class Estadistica_Equipo_Partido(models.Model):
 class Estadistica_Jugador_Partido(models.Model):
     id_partido              = models.ForeignKey(Partidos, on_delete = models.CASCADE)
     id_jugador              = models.ForeignKey(Jugadores, on_delete= models.CASCADE)
+    inicial                 = models.IntegerField()
     puntos                  = models.FloatField(verbose_name='Pts')
     minutos                 = models.DurationField()
     tiros_campo_convertidos = models.FloatField(verbose_name='TCc')
@@ -131,5 +134,5 @@ class Estadistica_Jugador_Partido(models.Model):
     tl_rate                 = models.FloatField(verbose_name='TLrate')
     p2_rate                 = models.FloatField(verbose_name='2Prate')
     p3_rate                 = models.FloatField(verbose_name='3Prate')
-    usg                     = models.FloatField(verbose_name='USG%')
+    usg                     = models.FloatField(verbose_name='USG%',null=True)
     

@@ -14,12 +14,12 @@ class EquiposResources(resources.ModelResource):
 
 class EquiposAdmin(ImportExportModelAdmin,admin.ModelAdmin):
     search_fields = ['nombre_corto']
-    list_display =  ('id_equipo','nombre_largo','nombre_corto','zona', 'urlLogo',)
+    list_display =  ('id_equipo','nombre_largo','nombre_corto','zona', 'logoS','logoL')
     resource_class = EquiposResources
     
 class JugadoresAdmin(ImportExportModelAdmin, admin.ModelAdmin,):
     search_fields = ['id_equipo']
-    list_display =  ('id','id_jugador','id_equipo', 'nombre',)
+    list_display =  ('id','id_jugador','id_equipo', 'nombre','photoS','photoL')
     resource_class = JugadoresResources
 
 

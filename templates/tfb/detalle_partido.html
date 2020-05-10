@@ -10,66 +10,7 @@
                         <h4 class="card-title"><span class="lstick"></span>Partidos</h4>
                     </div>
                     </div>
-                    {% if partidosEquipo %}
-                    <div class="table-responsive m-t-20">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Equipo</th>
-                                    <th>Fecha de Partido</th>
-                                    <th>PTS</th>
-                                    <th>TCc</th>
-                                    <th>TCi</th>
-                                    <th>%TC</th>
-                                    <th>2Pc</th>
-                                    <th>2Pi</th>
-                                    <th>%2P</th>
-                                    <th>3Pc</th>
-                                    <th>3Pi</th>
-                                    <th>%3P</th>
-                                    <th>TLc</th>
-                                    <th>TLi</th>
-                                    <th>%TL</th>
-                                    <th>RO</th>
-                                    <th>RD</th>
-                                    <th>RT</th>
-                                    <th>ASIS</th>
-                                    <th>PER</th>
-                                    <th>REC</th>
-                                    <th>VAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for partido in partidosEquipo %}
-                                <tr>
-                                    <td>{{partido.equiporival}}</td>
-                                    <td>{{partido.id_partido.detalle_partido}}</td>
-                                    <td>{{partido.puntos|floatformat:0}}</td>
-                                    <td>{{partido.tiros_campo_convertidos|floatformat:0}}</td>
-                                    <td>{{partido.tiros_campo_intentados|floatformat:0}}</td>
-                                    <td>{{partido.tiros_campo_porcentaje|floatformat:0}}</td>
-                                    <td>{{partido.tiros_2_convertidos|floatformat:0}}</td>
-                                    <td>{{partido.tiros_2_intentados|floatformat:0}}</td>
-                                    <td>{{partido.tiros_2_porcentaje|floatformat:0}}</td>
-                                    <td>{{partido.tiros_3_convertidos|floatformat:0}}</td>
-                                    <td>{{partido.tiros_3_intentados|floatformat:0}}</td>
-                                    <td>{{partido.tiros_3_porcentaje|floatformat:0}}</td>
-                                    <td>{{partido.tiro_libre_convertido|floatformat:0}}</td>
-                                    <td>{{partido.tiro_libre_intentado|floatformat:0}}</td>
-                                    <td>{{partido.tiros_libre_porcentaje|floatformat:0}}</td>
-                                    <td>{{partido.rebote_ofensivo|floatformat:0}}</td>
-                                    <td>{{partido.rebote_defensivo|floatformat:0}}</td>
-                                    <td>{{partido.rebote_total|floatformat:0}}</td>
-                                    <td>{{partido.asistencias|floatformat:0}}</td>
-                                    <td>{{partido.perdidas|floatformat:0}}</td>
-                                    <td>{{partido.recuperos|floatformat:0}}</td>
-                                    <td>{{partido.valoración|floatformat:0}}</td>
-                                </tr>
-                                {% endfor %}                           
-                            </tbody>
-                        </table>
-<!-- tabla resp. --></div>
-                    {% elif partidosJugador %}
+                    {% if partidosJugador %}
                     <div class="table-responsive m-t-20">
                         <table class="table table-bordered">
                             <thead>

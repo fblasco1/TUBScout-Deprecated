@@ -311,41 +311,55 @@ class ScraperPipeline(object):
             id_partido   = Partidos.objects.get(id_partido = linea[0])
             #INFO JUGADOR 
             try:
-                id_equipo    = Equipos.objects.get(nombre_largo__exact = linea[4])
+                id_equipo    = Equipos.objects.get(nombre_largo__exact = linea[5])
             except Equipos.DoesNotExist:
-                id_equipo    = Equipos.objects.get(nombre_corto__exact = linea[5])      
-            id_jugador, created   = Jugadores.objects.get_or_create(id_equipo = id_equipo, id_jugador = linea[1], defaults = {'id_equipo': id_equipo, 'id_jugador': linea[1], 'nombre': linea[2],'apellido': linea[3]})
+                id_equipo    = Equipos.objects.get(nombre_corto__exact = linea[6])  
+
+            try:
+                id_jugador = Jugadores.objects.get(id_equipo = id_equipo, apellido__exact = linea[4])
+            except Jugadores.MultipleObjectsReturned:
+                try:
+                    id_jugador = Jugadores.objects.get(id_equipo = id_equipo, nombre__exact = linea[3], apellido__exact = linea[4])
+                except Jugadores.DoesNotExist:
+                    id_jugador = Jugadores.objects.create(id_equipo = id_equipo, id_jugador= linea[1], nombre = linea[3], apellido = linea[4])
+                    self.error.append((id_partido,id_equipo,linea[1],linea[3],linea[4])) 
+            except Jugadores.DoesNotExist:
+                    id_jugador = Jugadores.objects.create(id_equipo = id_equipo, id_jugador= linea[1], nombre = linea[3], apellido = linea[4])
+                    self.error.append((id_partido,id_equipo,linea[1],linea[3],linea[4])) 
+            
             #ESTADISTICAS
-            minutos = linea[6].split(':')
+            minutos = linea[7].split(':')
             if int(minutos[1]) > 59:
                minutos[0] = int(minutos[0]) + 1
                minutos = str(str(minutos[0])+':'+'0')
             else:
                minutos = str(minutos[0]+':'+minutos[1])
-            puntos  = linea[7]
-            tcc     = linea[8]
-            tci     = linea[9]
-            tcp     = linea[10]
-            t2c     = linea[11]
-            t2i     = linea[12]
-            t2p     = linea[13]
-            t3c     = linea[14]
-            t3i     = linea[15]
-            t3p     = linea[16]
-            tlc     = linea[17]
-            tli     = linea[18]  
-            tlp     = linea[19]
-            ro      = linea[20]
-            rd      = linea[21]
-            rt      = linea[22]
-            asis    = linea[23]
-            per     = linea[24]
-            rec     = linea[25]
-            tap     = linea[26]
-            fp      = linea[27]
-            fr      = linea[28]
-            difpt   = linea[29]
-            val     = linea[30]
+            
+            inicial = linea[2]
+            puntos  = linea[8]
+            tcc     = linea[9]
+            tci     = linea[10]
+            tcp     = linea[11]
+            t2c     = linea[12]
+            t2i     = linea[13]
+            t2p     = linea[14]
+            t3c     = linea[15]
+            t3i     = linea[16]
+            t3p     = linea[17]
+            tlc     = linea[18]
+            tli     = linea[19]  
+            tlp     = linea[20]
+            ro      = linea[21]
+            rd      = linea[22]
+            rt      = linea[23]
+            asis    = linea[24]
+            per     = linea[25]
+            rec     = linea[26]
+            tap     = linea[27]
+            fp      = linea[28]
+            fr      = linea[29]
+            difpt   = linea[30]
+            val     = linea[31]
         #ESTADISTICAS AVANZADAS
         #PACE
             pace                = StatsAdvance.pace(self,tiroscampointentados= float(tci) ,perdidas= float(per), tiroslibresintentados=float(tli),reboff=float(ro))
@@ -373,12 +387,11 @@ class ScraperPipeline(object):
             v2P                 = StatsAdvance.V2PTC(self,doblesintentados=float(t2i) ,tiroscampointentados= float(tci))
         #VOLUMEN TIROS DE 3 SOBRE TIRO CAMPO
             v3P                 = StatsAdvance.V3PTC(self,triplesintentados=float(t3i) ,tiroscampointentados= float(tci))
-        #USO OFENSIVO
-            usg                 = StatsAdvance.USG(self,tiroslibresintentados=tli,tiroscampointentados=tci,perdidas=per,pace=pace)
         
             jugador             = Estadistica_Jugador_Partido.objects.create(
                 id_partido              = id_partido,
                 id_jugador              = id_jugador,
+                inicial                 = inicial,
                 puntos                  = puntos,
                 minutos                 = datetime.datetime.strptime(minutos,'%M:%S').time(),        
                 tiros_campo_convertidos = tcc,
@@ -417,7 +430,6 @@ class ScraperPipeline(object):
                 tl_rate                 = vTL,
                 p2_rate                 = v2P,
                 p3_rate                 = v3P,
-                usg                     = usg,
                 )
         return objeto
 

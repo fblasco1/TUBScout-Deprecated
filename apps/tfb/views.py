@@ -113,6 +113,7 @@ class DetalleEquipo(ListView):
                                                                                             faltas_personales = Avg('faltas_personales'),                                                                
                                                                                             valoración = Avg('valoración'),
                                                                                             pace = Avg('pace'),
+                                                                                            ptsxpace = Avg('ptsxpace'),
                                                                                             eficiencia_tiro_campo = Avg('eficiencia_tiro_campo'),
                                                                                             true_shooting = Avg('true_shooting'),
                                                                                             eficiencia_ofensiva = Avg('eficiencia_ofensiva'),
@@ -123,6 +124,8 @@ class DetalleEquipo(ListView):
                                                                                             tasa_recuperos = Avg('tasa_recuperos'),
                                                                                             tasa_asistencias = Avg('tasa_asistencias'),
                                                                                             tasa_perdidas = Avg('tasa_perdidas'),
+                                                                                            tasa_as_per = Avg('tasa_as_per'),
+                                                                                            tasa_tapones = Avg('tasa_tapones'),
                                                                                             tl_rate = Avg('tl_rate'),
                                                                                             p2_rate = Avg('p2_rate'),
                                                                                             p3_rate = Avg('p3_rate'),
@@ -130,33 +133,31 @@ class DetalleEquipo(ListView):
                                                                                             puntos_pintura = Avg('puntos_pintura'),
                                                                                             puntos_contraataque = Avg('puntos_contraataque'),
                                                                                             puntos_banca = Avg('puntos_banca'),
-                                                                                            ganados = Count("pk",filter= Q(partido_ganado=1)),
+                                                                                            puntos_ro = Avg('puntos_ro'),
+                                                                                            ganados = Count("pk",filter= Q(partido_ganado=1 )),
                                                                                             perdidos = Count("pk",filter= Q(partido_ganado=0)),
+                                                                                            ganloc  = Count("pk",filter= Q(partido_ganado=1) & Q(localia='1')),
+                                                                                            perloc = Count("pk",filter= Q(partido_ganado=0) & Q(localia='1')),
+                                                                                            ganvis = Count("pk",filter= Q(partido_ganado=1) & Q(localia='0')),
+                                                                                            pervis = Count("pk",filter= Q(partido_ganado=0) & Q(localia='0')),
                                                                                             )
-        contexto['plantel'] = Jugadores.objects.filter(id_equipo = self.kwargs['pk'], estado = "A")
-        contexto['equipo'] = Equipos.objects.get(id_equipo = self.kwargs['pk'])
+        contexto['plantel']     = Jugadores.objects.filter(id_equipo = self.kwargs['pk'], estado = "A")
+        contexto['equipo']      = Equipos.objects.get(id_equipo = self.kwargs['pk'])
+        contexto['partidos']    = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['pk'])
+        a = 0
+        for partido in contexto['partidos']:
+           contexto['partidos'][a].equiporival = Estadistica_Equipo_Partido.objects.filter(id_partido = partido.id_partido).exclude(id_equipo = self.kwargs['pk']).get()
+           a = a + 1 
         return contexto
 
     def get(self,request,*args,**kwargs):
         return render(request,self.template_name,self.get_context_data())
 
-class ListarPartidoEquipo(ListView):
-    template_name = 'tfb/detalle_partido.html'
-    context_object_name = 'partidosEquipo'
-    
-    def get_queryset(self):
-        partidos = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['pk'])
-        a = 0
-        for partido in partidos:
-           partidos[a].equiporival = Estadistica_Equipo_Partido.objects.filter(id_partido = partido.id_partido).exclude(id_equipo = self.kwargs['pk']).get().id_equipo
-           a = a + 1 
-        return partidos
-
 class DetalleJugador(ListView):
     template_name= 'tfb/detalle_jugador.html'
 
     def get_queryset(self): 
-        return Estadistica_Jugador_Partido.objects.filter(id_jugador= self.kwargs['pk']).aggregate(puntos = Avg('puntos'),
+        return Estadistica_Jugador_Partido.objects.filter(id_jugador= self.kwargs['idp']).aggregate(puntos = Avg('puntos'),
                                                                                        minutos = Avg(F('minutos')),
                                                                                        tiros_campo_convertidos = Sum('tiros_campo_convertidos'),
                                                                                        tiros_campo_intentados = Sum('tiros_campo_intentados'),
@@ -195,22 +196,95 @@ class DetalleJugador(ListView):
                                                                                        pace = Avg('pace'),
                                                                                        ptspace = Avg('ptspace'),
                                                                                        usg = Avg('usg'),
-                                                                                       effOf = Avg('eficiencia_ofensiva'),
-                                                                                       efFG = Avg('eficiencia_tiro_campo'),
-                                                                                       ts = Avg('true_shooting'),
-                                                                                       tas = Avg('tasa_asistencias'),
-                                                                                       asper = Avg('tasa_as_per'),
-                                                                                       tper = Avg('tasa_perdidas'),
-                                                                                       trec = Avg('tasa_recuperos'),
+                                                                                       eficiencia_ofensiva = Avg('eficiencia_ofensiva'),
+                                                                                       eficiencia_tiro_campo = Avg('eficiencia_tiro_campo'),
+                                                                                       true_shooting = Avg('true_shooting'),
+                                                                                       tasa_asistencias = Avg('tasa_asistencias'),
+                                                                                       tasa_as_per = Avg('tasa_as_per'),
+                                                                                       tasa_perdidas = Avg('tasa_perdidas'),
+                                                                                       tasa_recuperos = Avg('tasa_recuperos'),
                                                                                        tl_rate = Avg('tl_rate'),
                                                                                        p2_rate = Avg('p2_rate'),
                                                                                        p3_rate = Avg('p3_rate'),                                                 
+                                                                                       inicial = Count("pk", filter = Q(inicial=1)),
+                                                                                       cant_partidos = Count("pk"),
                                                                                     )
 
     def get_context_data(self,**kwargs):
         contexto = {}
-        contexto['estadisticas'] = self.get_queryset()
-        contexto['jugador'] = Jugadores.objects.get(id = self.kwargs['pk'])
+        contexto['equipo']       = Equipos.objects.get(id_equipo = self.kwargs['ide'])
+        contexto['estadisticas'] = Estadistica_Equipo_Partido.objects.filter(id_equipo= self.kwargs['ide']).aggregate(
+                                                                                            puntos = Avg('puntos'),
+                                                                                            q1     = Avg('q1'),
+                                                                                            q2     = Avg('q2'),
+                                                                                            q3     = Avg('q3'),
+                                                                                            q4     = Avg('q4'),
+                                                                                            tiros_campo_convertidos = Sum('tiros_campo_convertidos'),
+                                                                                            tiros_campo_intentados = Sum('tiros_campo_intentados'),
+                                                                                            tiros_campo_porcentaje = Case(
+                                                                                                                         When(tiros_campo_intentados = 0, then = 0),
+                                                                                                                         default = Sum('tiros_campo_convertidos') * 100/Sum('tiros_campo_intentados')),
+                                                                                            tiros_2_convertidos = Sum('tiros_2_convertidos'),
+                                                                                            tiros_2_intentados = Sum('tiros_2_intentados'),
+                                                                                            tiros_2_porcentaje = Case(
+                                                                                                                    When(tiros_2_intentados = 0, then = 0),
+                                                                                                                    default = Sum('tiros_2_convertidos') * 100/Sum('tiros_2_intentados')),
+                                                                                            tiros_3_convertidos = Sum('tiros_3_convertidos'),
+                                                                                            tiros_3_intentados = Sum('tiros_3_intentados'),
+                                                                                            tiros_3_porcentaje = Case(
+                                                                                                                    When(tiros_3_intentados=0, then = 0),
+                                                                                                                    default = Sum('tiros_3_convertidos')* 100 /Sum('tiros_3_intentados')),
+                                                                                            tiro_libre_convertido = Sum('tiro_libre_convertido'),
+                                                                                            tiro_libre_intentado = Sum('tiro_libre_intentado'),
+                                                                                            tiros_libre_porcentaje = Case(
+                                                                                                                        When(tiro_libre_intentado = 0, then= 0),
+                                                                                                                        default = Sum('tiro_libre_convertido')*100/Sum('tiro_libre_intentado')),
+                                                                                            rebote_ofensivo = Avg('rebote_ofensivo'),
+                                                                                            rebote_defensivo = Avg('rebote_defensivo'),                                                                
+                                                                                            rebote_total = Avg('rebote_total'),
+                                                                                            asistencias = Avg('asistencias'),
+                                                                                            perdidas = Avg('perdidas'),
+                                                                                            recuperos = Avg('recuperos'),
+                                                                                            tapones = Avg('tapones'),
+                                                                                            faltas_personales = Avg('faltas_personales'),                                                                
+                                                                                            valoración = Avg('valoración'),
+                                                                                            pace = Avg('pace'),
+                                                                                            ptsxpace = Avg('ptsxpace'),
+                                                                                            eficiencia_tiro_campo = Avg('eficiencia_tiro_campo'),
+                                                                                            true_shooting = Avg('true_shooting'),
+                                                                                            eficiencia_ofensiva = Avg('eficiencia_ofensiva'),
+                                                                                            eficiencia_defensiva = Avg('eficiencia_defensiva'),
+                                                                                            tiros_campo_asistidos = Avg('tiros_campo_asistidos'),
+                                                                                            tasa_rebote_ofensivo = Avg('tasa_rebote_ofensivo'),
+                                                                                            tasa_rebote_defensivo = Avg('tasa_rebote_defensivo'),
+                                                                                            tasa_recuperos = Avg('tasa_recuperos'),
+                                                                                            tasa_asistencias = Avg('tasa_asistencias'),
+                                                                                            tasa_perdidas = Avg('tasa_perdidas'),
+                                                                                            tasa_as_per = Avg('tasa_as_per'),
+                                                                                            tasa_tapones = Avg('tasa_tapones'),
+                                                                                            tl_rate = Avg('tl_rate'),
+                                                                                            p2_rate = Avg('p2_rate'),
+                                                                                            p3_rate = Avg('p3_rate'),
+                                                                                            puntos_de_perdidas = Avg('puntos_de_perdidas'),
+                                                                                            puntos_pintura = Avg('puntos_pintura'),
+                                                                                            puntos_contraataque = Avg('puntos_contraataque'),
+                                                                                            puntos_banca = Avg('puntos_banca'),
+                                                                                            puntos_ro = Avg('puntos_ro'),
+                                                                                            ganados = Count("pk",filter= Q(partido_ganado=1 )),
+                                                                                            perdidos = Count("pk",filter= Q(partido_ganado=0)),
+                                                                                            ganloc  = Count("pk",filter= Q(partido_ganado=1) & Q(localia='1')),
+                                                                                            perloc = Count("pk",filter= Q(partido_ganado=0) & Q(localia='1')),
+                                                                                            ganvis = Count("pk",filter= Q(partido_ganado=1) & Q(localia='0')),
+                                                                                            pervis = Count("pk",filter= Q(partido_ganado=0) & Q(localia='0')),
+                                                                                            )
+        contexto['playerstats']  = self.get_queryset()
+        contexto['plantel']      = Jugadores.objects.filter(id_equipo = self.kwargs['ide'], estado = "A")
+        contexto['partidos']     = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['ide'])
+        contexto['player']       = Jugadores.objects.filter(id = self.kwargs['idp']).get()
+        a = 0
+        for partido in contexto['partidos']:
+           contexto['partidos'][a].equiporival = Estadistica_Equipo_Partido.objects.filter(id_partido = partido.id_partido).exclude(id_equipo = self.kwargs['ide']).get()
+           a = a + 1 
         return contexto
 
     def get(self,request,*args,**kwargs):

@@ -95,6 +95,7 @@ class StatsTeamItem(scrapy.Item):
 class StatsPlayerItem(scrapy.Item):
     id_partido              = scrapy.Field()
     id_jugador              = scrapy.Field()
+    inicial                 = scrapy.Field()
     nombre                  = scrapy.Field()
     apellido                = scrapy.Field()
     nombrelargo             = scrapy.Field()
