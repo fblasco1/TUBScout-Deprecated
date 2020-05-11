@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect 
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, View
-from django.db.models import Sum,Avg, Q, Count, F, Case, When, Subquery
+from django.db.models import Sum,Avg, Q, Count, F, Case, When, Subquery, FloatField
 from .models import Equipos,Jugadores, Estadistica_Equipo_Partido, Estadistica_Jugador_Partido, Partidos
 from .forms import DetalleJugadorForm
 from TUBSClass import StatsAdvance
@@ -141,9 +141,10 @@ class DetalleEquipo(ListView):
                                                                                             ganvis = Count("pk",filter= Q(partido_ganado=1) & Q(localia='0')),
                                                                                             pervis = Count("pk",filter= Q(partido_ganado=0) & Q(localia='0')),
                                                                                             )
-        contexto['plantel']     = Jugadores.objects.filter(id_equipo = self.kwargs['pk'], estado = "A")
-        contexto['equipo']      = Equipos.objects.get(id_equipo = self.kwargs['pk'])
-        contexto['partidos']    = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['pk'])
+        contexto['plantel']         = Jugadores.objects.filter(id_equipo = self.kwargs['pk'], estado = "A")
+        contexto['equipo']          = Equipos.objects.get(id_equipo = self.kwargs['pk'])
+        contexto['partidos']        = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['pk'])
+        contexto['quinteto']     = Estadistica_Jugador_Partido.objects.filter(id_partido__estadistica_equipo_partido__id_equipo = self.kwargs['pk'],id_jugador__id_equipo = self.kwargs['pk'], inicial = 1).order_by('-id_partido__detalle_partido')[:5]
         a = 0
         for partido in contexto['partidos']:
            contexto['partidos'][a].equiporival = Estadistica_Equipo_Partido.objects.filter(id_partido = partido.id_partido).exclude(id_equipo = self.kwargs['pk']).get()
@@ -193,21 +194,24 @@ class DetalleJugador(ListView):
                                                                                        faltas_personales = Avg('faltas_personales'),
                                                                                        diferencia_puntos = Avg('diferencia_puntos'),                                                                
                                                                                        valoración = Avg('valoración'),
-                                                                                       pace = Avg('pace'),
-                                                                                       ptspace = Avg('ptspace'),
+                                                                                       pace    =  (Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField())  ,
+                                                                                       ptspace =  (Sum('puntos',output_field=FloatField()) / ((Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField()))) / Count("pk",output_field=FloatField()),
+                                                                                       #ptsmin  =  (Sum('puntos',output_field=FloatField()) / Sum(F('minutos'),output_field=FloatField())) / Count("pk",output_field=FloatField()),
+                                                                                       ptstl = Sum('tiro_libre_convertido') / Sum('tiro_libre_intentado'),
+                                                                                       pts2p = (Sum('tiros_2_convertidos') * 2)/Sum('tiros_2_intentados'),
+                                                                                       pts3p = (Sum('tiros_3_convertidos') * 3)/Sum('tiros_3_intentados'),
                                                                                        usg = Avg('usg'),
-                                                                                       eficiencia_ofensiva = Avg('eficiencia_ofensiva'),
-                                                                                       eficiencia_tiro_campo = Avg('eficiencia_tiro_campo'),
-                                                                                       true_shooting = Avg('true_shooting'),
-                                                                                       tasa_asistencias = Avg('tasa_asistencias'),
-                                                                                       tasa_as_per = Avg('tasa_as_per'),
-                                                                                       tasa_perdidas = Avg('tasa_perdidas'),
-                                                                                       tasa_recuperos = Avg('tasa_recuperos'),
-                                                                                       tl_rate = Avg('tl_rate'),
-                                                                                       p2_rate = Avg('p2_rate'),
-                                                                                       p3_rate = Avg('p3_rate'),                                                 
-                                                                                       inicial = Count("pk", filter = Q(inicial=1)),
-                                                                                       cant_partidos = Count("pk"),
+                                                                                       eficiencia_ofensiva =  ((Sum('puntos',output_field=FloatField()) / ((Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField()))) / Count("pk",output_field=FloatField())) * 100,
+                                                                                       eficiencia_tiro_campo = (Sum('tiros_2_convertidos',output_field=FloatField()) + 0.5 * Sum('tiros_3_convertidos',outputfield=FloatField())) / Sum('tiros_campo_intentados',output_field=FloatField()) * 100,
+                                                                                       true_shooting = (Sum('puntos',output_field=FloatField())/ (2 * (Sum('tiros_campo_intentados',output_field=FloatField()) + 0.44 * Sum('tiro_libre_intentado',output_field=FloatField())))) *100,
+                                                                                       tasa_asistencias = ((Sum('asistencias',output_field=FloatField())/ ((Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField()))*100) / Count("pk",output_field=FloatField())),
+                                                                                       tasa_as_per = (Sum('asistencias',output_field=FloatField())/ Sum('perdidas',output_field=FloatField())),
+                                                                                       tasa_perdidas = ((Sum('perdidas',output_field=FloatField())/ ((Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField()))*100) / Count("pk",output_field=FloatField())),
+                                                                                       tasa_recuperos = ((Sum('recuperos',output_field=FloatField())/ ((Sum('tiros_campo_intentados',output_field=FloatField()) + Sum('perdidas',output_field=FloatField()) + 0.44 * (Sum('tiro_libre_intentado',output_field=FloatField())-Sum('rebote_ofensivo',output_field=FloatField()))) / Count("pk",output_field=FloatField()))*100) / Count("pk",output_field=FloatField())),
+                                                                                       tl_rate = (Sum('tiro_libre_intentado') / Sum('tiros_campo_intentados'))*100,
+                                                                                       p2_rate = (Sum('tiros_2_intentados') / Sum('tiros_campo_intentados'))*100,
+                                                                                       p3_rate = (Sum('tiros_3_intentados') / Sum('tiros_campo_intentados'))*100,                                                 
+                                                                                       cant_partidos = Count("pk"),      
                                                                                     )
 
     def get_context_data(self,**kwargs):
@@ -281,10 +285,12 @@ class DetalleJugador(ListView):
         contexto['plantel']      = Jugadores.objects.filter(id_equipo = self.kwargs['ide'], estado = "A")
         contexto['partidos']     = Estadistica_Equipo_Partido.objects.filter(id_equipo = self.kwargs['ide'])
         contexto['player']       = Jugadores.objects.filter(id = self.kwargs['idp']).get()
+        contexto['quinteto']     = Estadistica_Jugador_Partido.objects.filter(id_partido__estadistica_equipo_partido__id_equipo = self.kwargs['ide'],id_jugador__id_equipo = self.kwargs['ide'], inicial = 1).order_by('-id_partido__detalle_partido')[:5]
         a = 0
         for partido in contexto['partidos']:
            contexto['partidos'][a].equiporival = Estadistica_Equipo_Partido.objects.filter(id_partido = partido.id_partido).exclude(id_equipo = self.kwargs['ide']).get()
            a = a + 1 
+        
         return contexto
 
     def get(self,request,*args,**kwargs):

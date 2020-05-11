@@ -47,6 +47,22 @@
     </div>    
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade" id="resumen" role="tabpanel" aria-labelledby="resumen-tab">
+                <div class="col-4">
+                    
+                </div>
+                <div class="col-8">
+                    <div class="card-group">
+                        {% for inicial in quinteto %}
+                        <div class="card border-dark">
+                          <img src="{{inicial.id_jugador.photoL}}" class="card-img-top" alt="" width="150">
+                          <div class="card-body">
+                            <h2 class="card-title">{{inicial.id_jugador.nombre}} {{inicial.id_jugador.apellido}}</h2>
+                            <p>PTS: {{inicial.puntos}} AS: {{inicial.asistencias}} RO: {{inicial.rebote_ofensivo}} RD: {{inicial.rebote_ofensivo}}</p>
+                          </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
                 <div class="col-12">
                     <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS GLOBALES</span></h3>
                     <div class="bg-white rounded box-shadow">
@@ -74,6 +90,7 @@
                                             <th>ASIS</th>
                                             <th>PER</th>
                                             <th>REC</th>
+                                            <th>TAP</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -97,6 +114,7 @@
                                             <td>{{estadisticas.asistencias|floatformat:1}}</td>
                                             <td>{{estadisticas.perdidas|floatformat:1}}</td>
                                             <td>{{estadisticas.recuperos|floatformat:1}}</td>
+                                            <td>{{estadisticas.tapones|floatformat:1}}</td>
                                         </tr>                            
                                     </tbody>
                                 </table>
@@ -255,6 +273,7 @@
                                             <th>ASIS</th>
                                             <th>PER</th>
                                             <th>REC</th>
+                                            <th>TAP</th>
                                             <th>+-PT</th>
                                             <th>VAL</th>
                                         </tr>
@@ -281,6 +300,7 @@
                                             <td>{{playerstats.asistencias|floatformat:1}}</td>
                                             <td>{{playerstats.perdidas|floatformat:1}}</td>
                                             <td>{{playerstats.recuperos|floatformat:1}}</td>
+                                            <td>{{playerstats.tapones|floatformat:1}}</td>
                                             <td>{{playerstats.diferencia_puntos|floatformat:1}}</td>
                                             <td>{{playerstats.valoración|floatformat:1}}</td>
                                         </tr>                
@@ -308,15 +328,15 @@
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         PTS POR T2
-                        <h3></h3>
+                        <h3><td>{{playerstats.pts2p|floatformat:2}}</td></h3>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         PTS POR T3
-                        <h3></h3>
+                        <h3>{{playerstats.pts3p|floatformat:2}}</h3>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         PTS POR TL
-                        <h3></h3>
+                        <h3>{{playerstats.ptstl|floatformat:2}}</h3>
                     </li>
                 </div>                        
                 <div class="col-4">

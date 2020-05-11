@@ -29,7 +29,7 @@ class StatsAdvance():
         if tiroscampointentados == 0:
             efFG = 0
         else:
-            efFG = (doblesconvertidos + 0.5 * triplesconvertidos)/tiroscampointentados*100
+            efFG = (doblesconvertidos + 0.5 * triplesconvertidos)/tiroscampointentados * 100
         return round(efFG,2)
 
     def ts(self,puntos,tiroscampointentados,tiroslibresintentados):

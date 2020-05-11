@@ -1,6 +1,13 @@
 {% extends 'tfb/equipos.html' %}
 {% block titulo %} {{equipo.nombre_corto}} {% endblock titulo %}
-
+{% block extra-css %} 
+    <style>
+        .lista-quintetos {
+        height:350px;
+        overflow-y: scroll;
+    }
+    </style>
+{% endblock extra-css %}
 {% block body %}
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -56,149 +63,201 @@
     </div>    
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="resumen" role="tabpanel" aria-labelledby="resumen-tab">
-                <div class="col-12">
-                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS GLOBALES</span></h3>
-                    <div class="bg-white rounded box-shadow">
-                        <div class="d-flex">               
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>PTS</th>
-                                            <th>TCc</th>
-                                            <th>TCi</th>
-                                            <th>%TC</th>
-                                            <th>2Pc</th>
-                                            <th>2Pi</th>
-                                            <th>%2P</th>
-                                            <th>3Pc</th>
-                                            <th>3Pi</th>
-                                            <th>%3P</th>
-                                            <th>TLc</th>
-                                            <th>TLi</th>
-                                            <th>%TL</th>
-                                            <th>RO</th>
-                                            <th>RD</th>
-                                            <th>RT</th>
-                                            <th>ASIS</th>
-                                            <th>PER</th>
-                                            <th>REC</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{{estadisticas.puntos|floatformat:1}}</td>
-                                            <td>{{estadisticas.tiros_campo_convertidos|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_campo_intentados|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_campo_porcentaje|floatformat:1}}</td>
-                                            <td>{{estadisticas.tiros_2_convertidos|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_2_intentados|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_2_porcentaje|floatformat:1}}</td>
-                                            <td>{{estadisticas.tiros_3_convertidos|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_3_intentados|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_3_porcentaje|floatformat:1}}</td>
-                                            <td>{{estadisticas.tiro_libre_convertido|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiro_libre_intentado|floatformat:0}}</td>
-                                            <td>{{estadisticas.tiros_libre_porcentaje|floatformat:1}}</td>
-                                            <td>{{estadisticas.rebote_ofensivo|floatformat:1}}</td>
-                                            <td>{{estadisticas.rebote_defensivo|floatformat:1}}</td>
-                                            <td>{{estadisticas.rebote_total|floatformat:1}}</td>
-                                            <td>{{estadisticas.asistencias|floatformat:1}}</td>
-                                            <td>{{estadisticas.perdidas|floatformat:1}}</td>
-                                            <td>{{estadisticas.recuperos|floatformat:1}}</td>
-                                        </tr>                            
-                                    </tbody>
-                                </table>
-                            </div>            
-                        </div> 
+                <div class="card">
+                    <div class="card-header bg-secondary">
+                        <h1 class="card-title text-light">Resumen</h1>
                     </div>
-                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS AVANZADAS</span></h3>
-                    <div class="bg-white rounded box-shadow">
-                        <div class="d-flex">               
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Ritmo</th>
-                                            <th>PTPP</th>
-                                            <th>%EFG</th>
-                                            <th>%TS</th>
-                                            <th>EFOF</th>
-                                            <th>EFDEF</th>
-                                            <th>%RO</th>
-                                            <th>%RD</th>
-                                            <th>%AS</th>
-                                            <th>%PER</th>
-                                            <th>AS/PER</th>
-                                            <th>TC/AS</th>
-                                            <th>%REC</th>
-                                            <th>%TAP</th>
-                                            <th>TL/TC</th>
-                                            <th>2P/TC</th>
-                                            <th>3P/TC</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>{{estadisticas.pace|floatformat:2}}</td>
-                                            <td>{{estadisticas.ptsxpace|floatformat:2}}</td>
-                                            <td>{{estadisticas.eficiencia_tiro_campo|floatformat:2}}</td>
-                                            <td>{{estadisticas.true_shooting|floatformat:2}}</td>
-                                            <td>{{estadisticas.eficiencia_ofensiva|floatformat:2}}</td>
-                                            <td>{{estadisticas.eficiencia_defensiva|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_rebote_ofensivo|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_rebote_defensivo|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_asistencias|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_perdidas|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_as_per|floatformat:2}}</td>
-                                            <td>{{estadisticas.tiros_campo_asistidos|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_recuperos|floatformat:2}}</td>
-                                            <td>{{estadisticas.tasa_tapones|floatformat:2}}</td>
-                                            <td>{{estadisticas.tl_rate|floatformat:2}}</td>
-                                            <td>{{estadisticas.p2_rate|floatformat:2}}</td>
-                                            <td>{{estadisticas.p3_rate|floatformat:2}}</td>
-                                        </tr>                            
-                                    </tbody>
-                                </table>
-                            </div>            
-                        </div> 
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-6">
-                        <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS DE EQUIPO</span></h3>
-                        <div class="bg-white rounded box-shadow">
-                            <div class="d-flex">
-                                <div class="table-responsive m-t-20">
-                                    <table class="table table-data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Puntos de Contraataque</th>
-                                                <th>Puntos Segundas Oportunidades</th>
-                                                <th>Puntos de Perdidas</th>
-                                                <th>Puntos en Pintura</th>
-                                                <th>Puntos Suplentes</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>{{estadisticas.puntos_contraataque|floatformat:2}}</td>
-                                                <td>{{estadisticas.puntos_ro|floatformat:2}}</td>
-                                                <td>{{estadisticas.puntos_de_perdidas|floatformat:2}}</td>
-                                                <td>{{estadisticas.puntos_pintura|floatformat:2}}</td>
-                                                <td>{{estadisticas.puntos_banca|floatformat:2}}</td>
-                                            </tr>                    
-                                        </tbody>
-                                    </table>
-                                </div>    
+                    <div class="card-body border border-secondary">
+                        <div class="row">
+                            <div class="col-2">
+                                <ul class="list-group lista-quintetos">
+                                    <li class="list-group-item bg-dark text-light">Quintetos</li>
+                                    <li class="list-group-item"> 
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="radio1" name="radio1" class="custom-control-input">
+                                            <label class="custom-control-label" for="radio1">Más usado</label>
+                                        </div> </li>
+                                    <li class="list-group-item"> 
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="radio2" name="radio2" class="custom-control-input">
+                                            <label class="custom-control-label" for="radio2">Ultimo usado</label>
+                                        </div> 
+                                    </li>
+                                    <li class="list-group-item bg-dark text-light">Partidos</li>
+                                    {% for partido in partidos %}
+                                    <li class="list-group-item"> 
+                                        <div class="custom-control custom-radio">
+                                            <input type="radio" id="{{partido.id_partido}}" name="{{partido.id_partido}}" class="custom-control-input">
+                                            <label class="custom-control-label" for="{{partido.id_partido}}">vs {{partido.equiporival.id_equipo}}</label>
+                                        </div> 
+                                    </li>   
+                                    {% endfor %} 
+                                </ul>
                             </div>
-                        </div>               
-                    </div>
-                    <div class="col-6">
-                        <h3><span class="d-block shadow text-light bg-info">LÍDERES</span></h3>
-                    </div>    
+                            <div class="col-10">
+                                <div class="card-deck">
+                                    {% for inicial in quinteto %}
+                                    <div class="card border border-dark">
+                                      <img src="{{inicial.id_jugador.photoL}}" class="card-img-top" alt="" width="150">
+                                      <div class="card-body">
+                                        <h2 class="card-title">{{inicial.id_jugador.nombre}} {{inicial.id_jugador.apellido}}</h2>
+                                        <a>PTS: {{inicial.puntos}} RO: {{inicial.rebote_ofensivo}} RD: {{inicial.rebote_ofensivo}} <br> AS: {{inicial.asistencias}} PER: {{inicial.asistencias}} </a>
+                                      </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS GLOBALES</span></h3>
+                                <div class="bg-white rounded box-shadow">
+                                    <div class="d-flex">               
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>PTS</th>
+                                                        <th>TCc</th>
+                                                        <th>TCi</th>
+                                                        <th>%TC</th>
+                                                        <th>2Pc</th>
+                                                        <th>2Pi</th>
+                                                        <th>%2P</th>
+                                                        <th>3Pc</th>
+                                                        <th>3Pi</th>
+                                                        <th>%3P</th>
+                                                        <th>TLc</th>
+                                                        <th>TLi</th>
+                                                        <th>%TL</th>
+                                                        <th>RO</th>
+                                                        <th>RD</th>
+                                                        <th>RT</th>
+                                                        <th>ASIS</th>
+                                                        <th>PER</th>
+                                                        <th>REC</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{estadisticas.puntos|floatformat:1}}</td>
+                                                        <td>{{estadisticas.tiros_campo_convertidos|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_campo_intentados|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_campo_porcentaje|floatformat:1}}</td>
+                                                        <td>{{estadisticas.tiros_2_convertidos|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_2_intentados|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_2_porcentaje|floatformat:1}}</td>
+                                                        <td>{{estadisticas.tiros_3_convertidos|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_3_intentados|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_3_porcentaje|floatformat:1}}</td>
+                                                        <td>{{estadisticas.tiro_libre_convertido|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiro_libre_intentado|floatformat:0}}</td>
+                                                        <td>{{estadisticas.tiros_libre_porcentaje|floatformat:1}}</td>
+                                                        <td>{{estadisticas.rebote_ofensivo|floatformat:1}}</td>
+                                                        <td>{{estadisticas.rebote_defensivo|floatformat:1}}</td>
+                                                        <td>{{estadisticas.rebote_total|floatformat:1}}</td>
+                                                        <td>{{estadisticas.asistencias|floatformat:1}}</td>
+                                                        <td>{{estadisticas.perdidas|floatformat:1}}</td>
+                                                        <td>{{estadisticas.recuperos|floatformat:1}}</td>
+                                                    </tr>                            
+                                                </tbody>
+                                            </table>
+                                        </div>            
+                                    </div> 
+                                </div>
+                            </div>        
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS AVANZADAS</span></h3>
+                                <div class="bg-white rounded box-shadow">
+                                    <div class="d-flex">               
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Ritmo</th>
+                                                        <th>PTPP</th>
+                                                        <th>%EFG</th>
+                                                        <th>%TS</th>
+                                                        <th>EFOF</th>
+                                                        <th>EFDEF</th>
+                                                        <th>%RO</th>
+                                                        <th>%RD</th>
+                                                        <th>%AS</th>
+                                                        <th>%PER</th>
+                                                        <th>AS/PER</th>
+                                                        <th>TC/AS</th>
+                                                        <th>%REC</th>
+                                                        <th>%TAP</th>
+                                                        <th>TL/TC</th>
+                                                        <th>2P/TC</th>
+                                                        <th>3P/TC</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{estadisticas.pace|floatformat:2}}</td>
+                                                        <td>{{estadisticas.ptsxpace|floatformat:2}}</td>
+                                                        <td>{{estadisticas.eficiencia_tiro_campo|floatformat:2}}</td>
+                                                        <td>{{estadisticas.true_shooting|floatformat:2}}</td>
+                                                        <td>{{estadisticas.eficiencia_ofensiva|floatformat:2}}</td>
+                                                        <td>{{estadisticas.eficiencia_defensiva|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_rebote_ofensivo|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_rebote_defensivo|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_asistencias|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_perdidas|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_as_per|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tiros_campo_asistidos|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_recuperos|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tasa_tapones|floatformat:2}}</td>
+                                                        <td>{{estadisticas.tl_rate|floatformat:2}}</td>
+                                                        <td>{{estadisticas.p2_rate|floatformat:2}}</td>
+                                                        <td>{{estadisticas.p3_rate|floatformat:2}}</td>
+                                                    </tr>                            
+                                                </tbody>
+                                            </table>
+                                        </div>            
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>    
+                        <div class="row">
+                            <div class="col-6">
+                                <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS DE EQUIPO</span></h3>
+                                <div class="bg-white rounded box-shadow">
+                                    <div class="d-flex">
+                                        <div class="table-responsive m-t-20">
+                                            <table class="table table-data-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Puntos de Contraataque</th>
+                                                        <th>Puntos Segundas Oportunidades</th>
+                                                        <th>Puntos de Perdidas</th>
+                                                        <th>Puntos en Pintura</th>
+                                                        <th>Puntos Suplentes</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>{{estadisticas.puntos_contraataque|floatformat:2}}</td>
+                                                        <td>{{estadisticas.puntos_ro|floatformat:2}}</td>
+                                                        <td>{{estadisticas.puntos_de_perdidas|floatformat:2}}</td>
+                                                        <td>{{estadisticas.puntos_pintura|floatformat:2}}</td>
+                                                        <td>{{estadisticas.puntos_banca|floatformat:2}}</td>
+                                                    </tr>                    
+                                                </tbody>
+                                            </table>
+                                        </div>    
+                                    </div>
+                                </div>               
+                            </div>
+                            <div class="col-6">
+                                <h3><span class="d-block shadow text-light bg-info">LÍDERES</span></h3>
+                            </div>    
+                        </div>
+                    </div>        
                 </div>
-                
             </div>
             <div class="tab-pane fade" id="plantel" role="tabpanel" aria-labelledby="plantel-tab">
                 <div class="card">
