@@ -1,108 +1,489 @@
-{% extends 'tfb/base.html' %}
+{% extends 'tfb/detalle_equipo.html' %}
 {% load staticfiles %}
-{% block body %}
-<div class="row">
-    <!-- Column -->
-    <div class="col-lg-4 col-xlg-3 col-md-5">
-        <div class="card">
-            <div class="card-body">
-                <center class="m-t-30"> <img src="{{jugador.urlIMG}}" class="img-square" width="100">
-                    <h3 class="card-title m-t-10">{{jugador.nombre}} {{jugador.apellido}}</h3>
-                        <div class="row text-center justify-content-md-center">
-                            <a>{{jugador.id_equipo.nombre_corto}}</a>
-                        </div>
-                </center>
-            <button onclick="abrir_modal_edicion('{% url 'tfb:actualizar_jugador' jugador.id %}')" class="btn btn-primary">Actualizar</button>
-            </div>
-        </div>
-    </div>
-    <!-- Column -->
-    <!-- Column -->
+{% block content %}
+<div class="card-header">
+    <ul class="nav nav-tabs nav-fill card-header-tabs" id="nav-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="nav-resumen-tab" data-toggle="tab" href="#resumen" role="tab" aria-controls="resumen">RESUMEN</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" id="nav-plantel-tab" data-toggle="tab" href="#plantel" role="tab" aria-controls="plantel">PLANTEL</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-fixture-tab" data-toggle="tab" href="#fixture" role="tab" aria-controls="fixture">FIXTURE</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-comparacion-tab" data-toggle="tab" href="#comparacion" role="tab" aria-controls="comparacion">COMPARACIÓN</a>
+        </li>
+    </ul>
 </div>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex">
-                    <div>
-                        <h4 class="card-title"><span class="lstick"></span>Estadisticas Acumuladas</h4>
+<div class="card-body">
+    <div class="row page-titles">
+        <div class="col-2">
+            <img src="{{equipo.logoL}}" alt="Logo">
+        </div>
+        <div class="col-3">
+                <h1 class="card-title">{{equipo.nombre_corto}}</h1>
+                <h1><span class="badge badge-dark">G</span> {{estadisticas.ganados}} <span class="badge badge-dark">P</span> {{estadisticas.perdidos}}</h1>
+        </div>
+        <div class="col-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Local
+                <h3>{{estadisticas.ganloc}}-{{estadisticas.perloc}}</h3>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Visitante
+                <h3>{{estadisticas.ganvis}}-{{estadisticas.pervis}}</h3>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Ultimos 10
+                <h3>0-0</h3>
+            </li>
+        </div>
+        <div class="col-4 align-self-center text-center"> 
+            <h1>POS</h1>
+            <h1>4</h1>
+        </div>
+    </div>    
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade" id="resumen" role="tabpanel" aria-labelledby="resumen-tab">
+                <div class="col-12">
+                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS GLOBALES</span></h3>
+                    <div class="bg-white rounded box-shadow">
+                        <div class="d-flex">               
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>PTS</th>
+                                            <th>TCc</th>
+                                            <th>TCi</th>
+                                            <th>%TC</th>
+                                            <th>2Pc</th>
+                                            <th>2Pi</th>
+                                            <th>%2P</th>
+                                            <th>3Pc</th>
+                                            <th>3Pi</th>
+                                            <th>%3P</th>
+                                            <th>TLc</th>
+                                            <th>TLi</th>
+                                            <th>%TL</th>
+                                            <th>RO</th>
+                                            <th>RD</th>
+                                            <th>RT</th>
+                                            <th>ASIS</th>
+                                            <th>PER</th>
+                                            <th>REC</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{estadisticas.puntos|floatformat:1}}</td>
+                                            <td>{{estadisticas.tiros_campo_convertidos|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_campo_intentados|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_campo_porcentaje|floatformat:1}}</td>
+                                            <td>{{estadisticas.tiros_2_convertidos|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_2_intentados|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_2_porcentaje|floatformat:1}}</td>
+                                            <td>{{estadisticas.tiros_3_convertidos|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_3_intentados|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_3_porcentaje|floatformat:1}}</td>
+                                            <td>{{estadisticas.tiro_libre_convertido|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiro_libre_intentado|floatformat:0}}</td>
+                                            <td>{{estadisticas.tiros_libre_porcentaje|floatformat:1}}</td>
+                                            <td>{{estadisticas.rebote_ofensivo|floatformat:1}}</td>
+                                            <td>{{estadisticas.rebote_defensivo|floatformat:1}}</td>
+                                            <td>{{estadisticas.rebote_total|floatformat:1}}</td>
+                                            <td>{{estadisticas.asistencias|floatformat:1}}</td>
+                                            <td>{{estadisticas.perdidas|floatformat:1}}</td>
+                                            <td>{{estadisticas.recuperos|floatformat:1}}</td>
+                                        </tr>                            
+                                    </tbody>
+                                </table>
+                            </div>            
+                        </div> 
                     </div>
-                    <div class="col-sm-8 align-self-center">
-                        <a href="{% url 'tfb:detalle_partido2' jugador.id %}" class="btn btn-info pull-right">Ver Partidos</a>
+                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS AVANZADAS</span></h3>
+                    <div class="bg-white rounded box-shadow">
+                        <div class="d-flex">               
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Ritmo</th>
+                                            <th>PTPP</th>
+                                            <th>%EFG</th>
+                                            <th>%TS</th>
+                                            <th>EFOF</th>
+                                            <th>EFDEF</th>
+                                            <th>%RO</th>
+                                            <th>%RD</th>
+                                            <th>%AS</th>
+                                            <th>%PER</th>
+                                            <th>AS/PER</th>
+                                            <th>TC/AS</th>
+                                            <th>%REC</th>
+                                            <th>%TAP</th>
+                                            <th>TL/TC</th>
+                                            <th>2P/TC</th>
+                                            <th>3P/TC</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{estadisticas.pace|floatformat:2}}</td>
+                                            <td>{{estadisticas.ptsxpace|floatformat:2}}</td>
+                                            <td>{{estadisticas.eficiencia_tiro_campo|floatformat:2}}</td>
+                                            <td>{{estadisticas.true_shooting|floatformat:2}}</td>
+                                            <td>{{estadisticas.eficiencia_ofensiva|floatformat:2}}</td>
+                                            <td>{{estadisticas.eficiencia_defensiva|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_rebote_ofensivo|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_rebote_defensivo|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_asistencias|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_perdidas|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_as_per|floatformat:2}}</td>
+                                            <td>{{estadisticas.tiros_campo_asistidos|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_recuperos|floatformat:2}}</td>
+                                            <td>{{estadisticas.tasa_tapones|floatformat:2}}</td>
+                                            <td>{{estadisticas.tl_rate|floatformat:2}}</td>
+                                            <td>{{estadisticas.p2_rate|floatformat:2}}</td>
+                                            <td>{{estadisticas.p3_rate|floatformat:2}}</td>
+                                        </tr>                            
+                                    </tbody>
+                                </table>
+                            </div>            
+                        </div> 
                     </div>
                 </div>
-                    <div class="table-responsive m-t-20">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>PTS</th>
-                                    <th>MIN</th>
-                                    <th>TCc</th>
-                                    <th>TCi</th>
-                                    <th>%TC</th>
-                                    <th>2Pc</th>
-                                    <th>2Pi</th>
-                                    <th>%2P</th>
-                                    <th>3Pc</th>
-                                    <th>3Pi</th>
-                                    <th>%3P</th>
-                                    <th>TLc</th>
-                                    <th>TLi</th>
-                                    <th>%TL</th>
-                                    <th>RO</th>
-                                    <th>RD</th>
-                                    <th>RT</th>
-                                    <th>ASIS</th>
-                                    <th>PER</th>
-                                    <th>REC</th>
-                                    <th>+-PT</th>
-                                    <th>VAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>                                
-                                <tr>
-                                    <td>{{estadisticas.puntos|floatformat:1}}</td>
-                                    <td>{{estadisticas.minutos}}</td>
-                                    <td>{{estadisticas.tiros_campo_convertidos|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_campo_intentados|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_campo_porcentaje|floatformat:1}}</td>
-                                    <td>{{estadisticas.tiros_2_convertidos|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_2_intentados|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_2_porcentaje|floatformat:1}}</td>
-                                    <td>{{estadisticas.tiros_3_convertidos|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_3_intentados|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_3_porcentaje|floatformat:1}}</td>
-                                    <td>{{estadisticas.tiro_libre_convertido|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiro_libre_intentado|floatformat:0}}</td>
-                                    <td>{{estadisticas.tiros_libre_porcentaje|floatformat:1}}</td>
-                                    <td>{{estadisticas.rebote_ofensivo|floatformat:1}}</td>
-                                    <td>{{estadisticas.rebote_defensivo|floatformat:1}}</td>
-                                    <td>{{estadisticas.rebote_total|floatformat:1}}</td>
-                                    <td>{{estadisticas.asistencias|floatformat:1}}</td>
-                                    <td>{{estadisticas.perdidas|floatformat:1}}</td>
-                                    <td>{{estadisticas.recuperos|floatformat:1}}</td>
-                                    <td>{{estadisticas.diferencia_puntos|floatformat:1}}</td>
-                                    <td>{{estadisticas.valoración|floatformat:1}}</td>
-                                </tr>                
-                            </tbody>
-                        </table>
-<!-- tabla resp. --></div>
-<!-- card body --></div>
-<!-- card -->  </div>
-<!-- col --></div>
-<!-- row --></div>
+                <div class="row">
+                    <div class="col-6">
+                        <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS DE EQUIPO</span></h3>
+                        <div class="bg-white rounded box-shadow">
+                            <div class="d-flex">
+                                <div class="table-responsive m-t-20">
+                                    <table class="table table-data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Puntos de Contraataque</th>
+                                                <th>Puntos Segundas Oportunidades</th>
+                                                <th>Puntos de Perdidas</th>
+                                                <th>Puntos en Pintura</th>
+                                                <th>Puntos Suplentes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{estadisticas.puntos_contraataque|floatformat:2}}</td>
+                                                <td>{{estadisticas.puntos_ro|floatformat:2}}</td>
+                                                <td>{{estadisticas.puntos_de_perdidas|floatformat:2}}</td>
+                                                <td>{{estadisticas.puntos_pintura|floatformat:2}}</td>
+                                                <td>{{estadisticas.puntos_banca|floatformat:2}}</td>
+                                            </tr>                    
+                                        </tbody>
+                                    </table>
+                                </div>    
+                            </div>
+                        </div>               
+                    </div>
+                    <div class="col-6">
+                        <h3><span class="d-block shadow text-light bg-info">LÍDERES</span></h3>
+                    </div>    
+                </div>
+                
+            </div>
+            <div class="tab-pane fade show active" id="plantel" role="tabpanel" aria-labelledby="plantel-tab">
+                <div class="card">
+                    <div class="card-header bg-secondary">
+                        <h1 class="card-title text-light">Plantel</h1>
+                    </div>
+                    <div class="card-body border border-secondary">
+                        <div class="row">
+                        <div class="col-3">
+                            <nav class="navbar navbar-dark bg-dark">
+                                <form class="form-inline my-2 my-lg-0">
+                                    <input class="form-control mr-sm-2" type="search" placeholder="Buscar Jugador" aria-label="Buscar">
+                                    <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Buscar</button>
+                                </form>
+                            </nav>
+                            <h4>
+                                <div class="list-group" id="list-tab" role="tablist">
+                                {% for jugador in plantel %}
+                                    <a class="list-group-item list-group-item-action text-dark bg-light"  href="{% url 'tfb:detalle_jugador'  equipo.id_equipo  jugador.id %}" role="tab" aria-controls="{{jugador.id}}" aria-selected="false"><img src="{{jugador.photoS}}" class="rounded-circle border border-dark" alt="">{{jugador.nombre}} {{jugador.apellido}}</a>
+                                {% endfor %}
+                                </div>
+                            </h4>
+                        </div>
+                        <div class="col-9">
 
-<div class="modal-fade" id="edicion" role="dialog">
+{% block jugador %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-2">
+                    <img src="{{player.photoL}}" alt="" class="img-thumbnail">
+                </div>    
+                <div class="col-7">
+                    <h2>{{player.nombre}} {{player.apellido}}</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS GLOBALES</span></h3>
+                    <div class="bg-white rounded box-shadow">
+                        <div class="d-flex">
+                            <div class="table-responsive m-t-20">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>PAR</th>
+                                            <th>PTS</th>
+                                            <th>MIN</th>
+                                            <th>TCc</th>
+                                            <th>TCi</th>
+                                            <th>%TC</th>
+                                            <th>2Pc</th>
+                                            <th>2Pi</th>
+                                            <th>%2P</th>
+                                            <th>3Pc</th>
+                                            <th>3Pi</th>
+                                            <th>%3P</th>
+                                            <th>TLc</th>
+                                            <th>TLi</th>
+                                            <th>%TL</th>
+                                            <th>RO</th>
+                                            <th>RD</th>
+                                            <th>RT</th>
+                                            <th>ASIS</th>
+                                            <th>PER</th>
+                                            <th>REC</th>
+                                            <th>+-PT</th>
+                                            <th>VAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>                                
+                                        <tr><td>{{playerstats.cant_partidos|floatformat:0}}</td>
+                                            <td>{{playerstats.puntos|floatformat:1}}</td>
+                                            <td>{{playerstats.minutos}}</td>
+                                            <td>{{playerstats.tiros_campo_convertidos|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_campo_intentados|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_campo_porcentaje|floatformat:1}}</td>
+                                            <td>{{playerstats.tiros_2_convertidos|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_2_intentados|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_2_porcentaje|floatformat:1}}</td>
+                                            <td>{{playerstats.tiros_3_convertidos|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_3_intentados|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_3_porcentaje|floatformat:1}}</td>
+                                            <td>{{playerstats.tiro_libre_convertido|floatformat:0}}</td>
+                                            <td>{{playerstats.tiro_libre_intentado|floatformat:0}}</td>
+                                            <td>{{playerstats.tiros_libre_porcentaje|floatformat:1}}</td>
+                                            <td>{{playerstats.rebote_ofensivo|floatformat:1}}</td>
+                                            <td>{{playerstats.rebote_defensivo|floatformat:1}}</td>
+                                            <td>{{playerstats.rebote_total|floatformat:1}}</td>
+                                            <td>{{playerstats.asistencias|floatformat:1}}</td>
+                                            <td>{{playerstats.perdidas|floatformat:1}}</td>
+                                            <td>{{playerstats.recuperos|floatformat:1}}</td>
+                                            <td>{{playerstats.diferencia_puntos|floatformat:1}}</td>
+                                            <td>{{playerstats.valoración|floatformat:1}}</td>
+                                        </tr>                
+                                    </tbody>
+                                </table>
+                            </div>        
+                        </div>
+                    </div>
+                </div>                        
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <h3><span class="d-block shadow text-light bg-info">ANÁLISIS DE ANOTACIÓN</span></h3>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        RITMO
+                        <h3>{{playerstats.pace|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PTS POR POS
+                        <h3>{{playerstats.ptspace|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PTS POR MIN
+                        <h3></h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PTS POR T2
+                        <h3></h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PTS POR T3
+                        <h3></h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PTS POR TL
+                        <h3></h3>
+                    </li>
+                </div>                        
+                <div class="col-4">
+                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS DE TIRO</span></h3>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        EFICIENCIA FG
+                        <h3>%{{playerstats.eficiencia_tiro_campo|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        TRUE SHOOTING
+                        <h3>%{{playerstats.true_shooting|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        VOLUMEN 2P/TC
+                        <h3>%{{playerstats.p2_rate|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        VOLUMEN 3P/TC
+                        <h3>%{{playerstats.p3_rate|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        VOLUMEN TL/TC
+                        <h3>%{{playerstats.tl_rate|floatformat:2}}</h3>
+                    </li>
+                </div>
+                <div class="col-4">
+                    <h3><span class="d-block shadow text-light bg-info">ESTADISTICAS AVANZADAS</span></h3>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ASIST POR POS
+                        <h3>%{{playerstats.tasa_asistencias|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        PER POR POS
+                        <h3>%{{playerstats.tasa_perdidas|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ASIS POR PER
+                        <h3>%{{playerstats.tasa_as_per|floatformat:2}}</h3>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        REC POR POS
+                        <h3>%{{playerstats.tasa_recuperos|floatformat:2}}</h3>
+                    </li>
+                </div>
+            </div>
+        </div>   
+{% endblock jugador %}
 
 </div>
-{% endblock body %}
+</div>
+</div>
+</div>
+</div>    
+<div class="tab-pane fade" id="fixture" role="tabpanel" aria-labelledby="fixture-tab">
+<div class="card">
+<div class="card-header bg-secondary">
+<h1 class="card-title text-light">Partidos</h1>
+</div>
+<div class="card-body border border-secondary">
+<div class="d-flex">
+    <div class="table-responsive m-t-20">
+        <table class="table table-bordered-">
+            <thead>
+                <tr>
+                    <th>{{equipo.nombre_corto}}</th>
+                    <th>Fecha de Partido</th>
+                    <th>RES</th>
+                    <th>TCc</th>
+                    <th>TCi</th>
+                    <th>%TC</th>
+                    <th>2Pc</th>
+                    <th>2Pi</th>
+                    <th>%2P</th>
+                    <th>3Pc</th>
+                    <th>3Pi</th>
+                    <th>%3P</th>
+                    <th>TLc</th>
+                    <th>TLi</th>
+                    <th>%TL</th>
+                    <th>RO</th>
+                    <th>RD</th>
+                    <th>RT</th>
+                    <th>ASIS</th>
+                    <th>PER</th>
+                    <th>REC</th>
+                    <th>VAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for partido in partidos %}
+                <tr>
+                    {% if partido.localia == "1" %}
+                        <td>VS {{partido.equiporival.id_equipo}}</td>    
+                    {% else %}
+                        <td>@{{partido.equiporival.id_equipo}}</td>
+                    {% endif %}
+                    <td>{{partido.id_partido.detalle_partido}}</td>
+                    {% if partido.localia == "1" %}
+                        <td><a href="https://www.fibalivestats.com/u/CAM/{{partido.id_partido.id_partido}}/bs.html">{{partido.puntos|floatformat:0}}-{{partido.equiporival.puntos|floatformat:0}}</a></td>    
+                    {% else %}
+                        <td><a href="https://www.fibalivestats.com/u/CAM/{{partido.id_partido.id_partido}}/bs.html">{{partido.equiporival.puntos|floatformat:0}}-{{partido.puntos|floatformat:0}}</a></td>
+                    {% endif %}
+                    <td>{{partido.tiros_campo_convertidos|floatformat:0}}</td>
+                    <td>{{partido.tiros_campo_intentados|floatformat:0}}</td>
+                    <td>{{partido.tiros_campo_porcentaje|floatformat:0}}</td>
+                    <td>{{partido.tiros_2_convertidos|floatformat:0}}</td>
+                    <td>{{partido.tiros_2_intentados|floatformat:0}}</td>
+                    <td>{{partido.tiros_2_porcentaje|floatformat:0}}</td>
+                    <td>{{partido.tiros_3_convertidos|floatformat:0}}</td>
+                    <td>{{partido.tiros_3_intentados|floatformat:0}}</td>
+                    <td>{{partido.tiros_3_porcentaje|floatformat:0}}</td>
+                    <td>{{partido.tiro_libre_convertido|floatformat:0}}</td>
+                    <td>{{partido.tiro_libre_intentado|floatformat:0}}</td>
+                    <td>{{partido.tiros_libre_porcentaje|floatformat:0}}</td>
+                    <td>{{partido.rebote_ofensivo|floatformat:0}}</td>
+                    <td>{{partido.rebote_defensivo|floatformat:0}}</td>
+                    <td>{{partido.rebote_total|floatformat:0}}</td>
+                    <td>{{partido.asistencias|floatformat:0}}</td>
+                    <td>{{partido.perdidas|floatformat:0}}</td>
+                    <td>{{partido.recuperos|floatformat:0}}</td>
+                    <td>{{partido.valoración|floatformat:0}}</td>
+                </tr>
+                {% endfor %}                           
+            </tbody>
+        </table>
+    </div>    
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane fade" id="comparacion" role="tabpanel" aria-labelledby="comparacion-tab">
+<div class="card">
+<div class="card-header bg-secondary">
+<h1 class="card-title text-light">Comparación</h1>
+</div>
+<div class="card-body">
+<div class="d-flex">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title"><span class="lstick"></span>NOA</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex">
+                <div class="table-responsive">
+                <table class="table-bordered">
+                    <tbody>
+                        {% for equipo in Equipos %}
+                            {% if equipo.zona == 'NOA' %}
+                        <tr>
+                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoL}}" alt="logo" width="50"></span></td>
+                            <td><a href="">{{equipo.nombre_corto}}</a></td>
+                        </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>            
+        </div> 
+    </div>    
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>          
+</div>   
 
-{% block extra-js %}
-<script type="text/javascript">
-    function abrir_modal_edicion(url) {
-        $('#edicion').load(url,function(){
-            $('this').modal('show');
-        });
-    }
-</script>
-{% endblock extra-js %}
+{% endblock content %}
+
+

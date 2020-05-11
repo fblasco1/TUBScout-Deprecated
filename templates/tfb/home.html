@@ -3,5 +3,9 @@
 {% block titulo %}Home{% endblock titulo %}
 
 {% block body %}
-
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tfb:index'%}">Home</a></li>
+    </ol>
+</nav>
 {% endblock body %}

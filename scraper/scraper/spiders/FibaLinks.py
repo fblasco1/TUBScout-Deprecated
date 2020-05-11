@@ -211,6 +211,7 @@ class StatsSpider(scrapy.Spider):
         for player in pno:
             jugador.add_value('id_partido', matchId)
             jugador.add_value('id_jugador', player)
+            jugador.add_value('inicial',jsonresponse['tm']['1']['pl'][player]['starter'])
             jugador.add_value('nombre', jsonresponse['tm']['1']['pl'][player]['firstName'])
             jugador.add_value('apellido', jsonresponse['tm']['1']['pl'][player]['familyName'])
             jugador.add_value('nombrelargo', nombrelargoA)
@@ -247,6 +248,7 @@ class StatsSpider(scrapy.Spider):
         for player in pno:
             jugador.add_value('id_partido', matchId)
             jugador.add_value('id_jugador', player)
+            jugador.add_value('inicial',jsonresponse['tm']['2']['pl'][player]['starter'])
             jugador.add_value('nombre', jsonresponse['tm']['2']['pl'][player]['firstName'])
             jugador.add_value('apellido', jsonresponse['tm']['2']['pl'][player]['familyName'])
             jugador.add_value('nombrelargo', nombrelargoB)
