@@ -1,11 +1,25 @@
 {% extends 'tfb/base.html' %}
+{% load staticfiles %}
 
 {% block titulo %}Home{% endblock titulo %}
 
-{% block body %}
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page"><a href="{% url 'tfb:index'%}">Home</a></li>
-    </ol>
-</nav>
-{% endblock body %}
+{% block content %}
+    <div class="row" style="margin-top: 15px;">
+        <nav class="grey lighten-1">
+            <div class="col s12">
+                <a href="#" class="breadcrumb">Home</a>
+            </div>
+        </nav> 
+    </div>
+    <div class="container-fluid">
+        <div class="center z-depth-2">
+            <h1>Bienvenido ENTRENADOR</h1>
+            <img src="{% static 'core/assets/images/logo-app/Logo-Completo-negro.svg' %}" alt="homepage" width="40%">
+            <div class="row">
+                <a class="waves-effect waves-light btn-large">Mi Equipo</a>
+                <a class="waves-effect waves-light btn-large">Jugadores</a>
+                <a class="waves-effect waves-light btn-large">Próximo Rival</a>
+            </div>
+        </div>
+    </div>
+{% endblock%}

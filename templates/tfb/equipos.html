@@ -1,300 +1,228 @@
 {% extends 'tfb/base.html' %}
 {% load staticfiles %}
-{% block body %}
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'tfb:index'%}">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="/tfb/listar_equipo">Equipos</a></li>
-                </ol>
-            </nav>
-
-            <div class="row page-titles">
-                    <div class="col-md-5 align-self-center">
-                       <h3>{% block titulo-principal %}{% endblock titulo-principal %}</h3>
-                    </div>
-                    <div class="col-md-2 align-self-center">
-                        {% block record %}{% endblock record %}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card bg-light border-dark">
-                            {% block content %}
-                            <div class="card-header bg-dark">
-                                <ul class="nav nav-pills nav-fill card-header-pills justify-content-center">
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-outline-secondary active" id="pills-norte-tab" data-toggle="pill" href="#pills-norte" role="tab" aria-controls="pills-norte">CONFERENCIA NORTE</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-outline-secondary" id="pills-sur-tab" data-toggle="pill" href="#pills-sur" role="tab" aria-controls="pills-sur">CONFERENCIA SUR</a>
-                                    </li>
-                                </ul>
+{% block content %}
+<div class="row" style="margin-top: 15px;">
+    <nav class="grey lighten-1">
+        <div class="col s12">
+            <a href="{% url 'tfb:index'%}" class="breadcrumb">Home</a>
+            <a href="#" class="breadcrumb">Equipos</a>
+        </div>
+    </nav>
+</div>
+<div class="row">
+    <div class="col-s12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="tabs tabs-fixed-width z-depth-1">
+                    <li class="tab">
+                        <a class="black-text active" href="#conf-norte">CONFERENCIA NORTE</a>
+                    </li>
+                    <li class="tab">
+                        <a class="black-text" href="#conf-sur">CONFERENCIA SUR</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div id="conf-norte">
+                    <div class="card-deck center">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Centro</h4>
                             </div>
                             <div class="card-body">
-                                <div class="tab-content" id="pills-tabContent">
-                                    <div class="tab-pane fade show active" id="pills-norte" role="tabpanel" aria-labelledby="pills-norte-tab">
-                                        <div class="card-group">
-                                            <div class="col-lg-3 col-md-3 col-sm-1">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h4 class="card-title"><span class="lstick"></span>Centro</h4>
-                                                    </div>
-                                                    <div class="card-body">
-                                                       <div class="d-flex">
-                                                           <div class="table-responsive m-t-20">
-                                                               <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                   <tbody>
-                                                                        {% for equipo in Equipos %}
-                                                                           {% if equipo.zona == 'Centro' %}
-                                                                       <tr>
-                                                                           <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                           <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                       </tr>
-                                                                           {% endif %}
-                                                                        {% endfor %}
-                                                                   </tbody>
-                                                               </table>
-                                                           </div>
-                                                       </div>            
-                                                    </div>
-                                               </div>       
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-1">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h4 class="card-title"><span class="lstick"></span>Entre Ríos</h4>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="d-flex">
-                                                            <div class="table-responsive m-t-20">
-                                                                <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                    <tbody>
-                                                                        {% for equipo in Equipos %}
-                                                                            {% if equipo.zona == 'Entre Rios' %}
-                                                                        <tr>
-                                                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                        </tr>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>            
-                                                        </div>
-                                                    </div>    
-                                                </div>
-                                            </div>    
-                                            <div class="col-lg-3 col-md-3 col-sm-1">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h4 class="card-title"><span class="lstick"></span>NEA</h4>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="d-flex">
-                                                            <div class="table-responsive m-t-20">
-                                                                <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                    <tbody>
-                                                                        {% for equipo in Equipos %}
-                                                                            {% if equipo.zona == 'NEA' %}
-                                                                        <tr>
-                                                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                        </tr>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>            
-                                                        </div>
-                                                    </div>    
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3 col-md-3 col-sm-1">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h4 class="card-title"><span class="lstick"></span>NOA</h4>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="d-flex">
-                                                            <div class="table-responsive m-t-20">
-                                                                <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                    <tbody>
-                                                                        {% for equipo in Equipos %}
-                                                                            {% if equipo.zona == 'NOA' %}
-                                                                        <tr>
-                                                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                            <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                        </tr>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>            
-                                                        </div> 
-                                                    </div>    
-                                                </div>
-                                            </div>    
-                                        </div> 
-                                </div>
-                                <div class="tab-pane fade" id="pills-sur" role="tabpanel" aria-labelledby="pills-sur-tab">
-                                    <div class="card-group">
-                                        <div class="col-lg-3 col-md-3 col-sm-1">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title"><span class="lstick"></span>Bonaerense</h4>
-                                                </div>
-                                                <div class="card-body">
-                                                   <div class="d-flex">
-                                                       <div class="table-responsive m-t-20">
-                                                           <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                               <tbody>
-                                                                    {% for equipo in Equipos %}
-                                                                       {% if equipo.zona == 'Bonaerense' %}
-                                                                   <tr>
-                                                                       <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                       <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                   </tr>
-                                                                       {% endif %}
-                                                                    {% endfor %}
-                                                               </tbody>
-                                                           </table>
-                                                       </div>
-                                                   </div>            
-                                                </div>
-                                           </div>       
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-1">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title"><span class="lstick"></span>Metropolitana</h4>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="d-flex">
-                                                        <div class="table-responsive m-t-20">
-                                                            <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                <tbody>
-                                                                    {% for equipo in Equipos %}
-                                                                        {% if equipo.zona == 'Metropolitana' %}
-                                                                    <tr>
-                                                                        <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                    </tr>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>            
-                                                    </div>
-                                                </div>    
-                                            </div>
-                                        </div>    
-                                        <div class="col-lg-3 col-md-3 col-sm-1">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title"><span class="lstick"></span>Cuyo</h4>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="d-flex">
-                                                        <div class="table-responsive m-t-20">
-                                                            <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                <tbody>
-                                                                    {% for equipo in Equipos %}
-                                                                        {% if equipo.zona == 'Cuyo' %}
-                                                                    <tr>
-                                                                        <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                    </tr>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>            
-                                                    </div>
-                                                </div>    
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-1">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title"><span class="lstick"></span>Patagonia</h4>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="d-flex">
-                                                        <div class="table-responsive m-t-20">
-                                                            <table class="table vm no-th-brd no-wrap pro-of-month">
-                                                                <tbody>
-                                                                    {% for equipo in Equipos %}
-                                                                        {% if equipo.zona == 'Patagonia' %}
-                                                                    <tr>
-                                                                        <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}" alt="logo" width="50"></span></td>
-                                                                        <td><a href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a></td>
-                                                                    </tr>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>            
-                                                    </div> 
-                                                </div>    
-                                            </div>
-                                        </div>    
-                                    </div> 
-                                </div>
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Centro' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-                        {% endblock content %}                                    
-        <!-- card -->   </div>
-        <!-- col --></div>
-<!-- row -->   </div>
-
-                <!-- ============================================================== -->
-                <!-- End Page Content -->
-                <!-- ============================================================== -->
-                
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Entre Ríos</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Entre Rios' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">NEA</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'NEA' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">NOA</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'NOA' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="conf-sur">
+                    <div class="card-deck center">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Bonaerense</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Bonaerense' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Metropolitana</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Metropolitana' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Cuyo</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Cuyo' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Patagonia</h4>
+                            </div>
+                            <div class="card-body">
+                                <table>
+                                    <tbody>
+                                        {% for equipo in Equipos %}
+                                        {% if equipo.zona == 'Patagonia' %}
+                                        <tr>
+                                            <td style="width:50px;"><span class="round"><img src="{{equipo.logoS}}"
+                                                        alt="logo" width="50"></span></td>
+                                            <td><a
+                                                    href="{% url 'tfb:detalle_equipo' equipo.id_equipo %}">{{equipo.nombre_corto}}</a>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        
-            <!-- ============================================================== -->
-            <!-- End Container fluid  -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- footer -->
-            <!-- ============================================================== -->
-            <footer class="footer"> 2019-TUBSCOUT</footer>
-           
-            <!-- ============================================================== -->
-            <!-- End footer -->
-            <!-- ============================================================== -->
         </div>
-        <!-- ============================================================== -->
-        <!-- End Page wrapper  -->
-        <!-- ============================================================== -->
     </div>
-    
-    <!-- ============================================================== -->
-    <!-- End Wrapper -->
-    <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- All Jquery -->
-    <!-- ============================================================== -->
-    <script src="{% static 'assets/plugins/jquery/jquery.min.js' %}"></script>
-    <!-- Bootstrap popper Core JavaScript -->
-    <script src="{% static 'assets/plugins/bootstrap/js/popper.min.js' %}"></script>
-    <script src="{% static 'assets/plugins/bootstrap/js/bootstrap.min.js' %}"></script>
-    <!-- slimscrollbar scrollbar JavaScript -->
-    <script src="{% static 'assets/plugins/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js' %}"></script>
-    <!--Wave Effects -->
-    <script src="{% static 'js/waves.js' %}"></script>
-    <!--Menu sidebar -->
-    <script src="{% static 'js/sidebarmenu.js' %}"></script>
-    <!--Custom JavaScript -->
-    <script src="{% static 'js/custom.min.js' %}"></script>
-    <!-- ============================================================== -->
-    <!-- This page plugins -->
-    <!-- ============================================================== -->
-    <!-- Chart JS -->
-    <script src="{% static 'js/dashboard.js' %}"></script>
+</div>    
+{% endblock content %}
 
-</body>
+{% block extra-js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.tabs');    
+        var instance = M.Tabs.init(elems);
+      });
+        
+    </script>
+{% endblock %}
+                                      
 
-{% endblock body %}
 
 </html>
